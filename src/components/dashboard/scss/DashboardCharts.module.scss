@@ -1,0 +1,459 @@
+.chartsContainer {
+  width: 100%;
+  min-height: 400px;
+  padding: 1rem 0;
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  color: var(--gray-700);
+
+  p {
+    margin-top: 1rem;
+    font-size: 1rem;
+  }
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255, 152, 0, 0.1);
+  border-top: 4px solid var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.notAuthenticated {
+  text-align: center;
+  padding: 3rem;
+  color: var(--gray-700);
+  font-size: 1rem;
+}
+
+.chartsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+.chartCard {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-orange);
+  border: 1px solid rgba(255, 152, 0, 0.1);
+  transition: all 0.3s ease-in-out;
+  min-height: 280px;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px -5px rgba(255, 152, 0, 0.25);
+  }
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+    min-height: 250px;
+  }
+}
+
+.chartTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--foreground);
+  margin-bottom: 1.5rem;
+  text-align: center;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary), var(--primary-light));
+    border-radius: 2px;
+  }
+}
+
+.noData {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: var(--gray-700);
+  font-style: italic;
+}
+
+// Estado de Rifas
+.statusContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.statusChart {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.statusLabel {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--gray-700);
+}
+
+.statusStats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.statusItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--gray-700);
+}
+
+.statusDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.circularProgress {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.progressSvg {
+  transform: rotate(-90deg);
+}
+
+.progressBackground {
+  fill: none;
+  stroke: rgba(255, 152, 0, 0.1);
+}
+
+.progressBar {
+  fill: none;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.6s ease-in-out;
+}
+
+.progressText {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.progressNumber {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.pieChartLegend {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.legendColor {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
+
+.legendLabel {
+  font-size: 0.875rem;
+  color: var(--gray-700);
+}
+
+// Rendimiento
+.performanceContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.performanceInfo {
+  text-align: center;
+}
+
+.performanceText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.performanceLabel {
+  font-weight: 600;
+  color: var(--foreground);
+  font-size: 1rem;
+}
+
+.performanceDescription {
+  font-size: 0.875rem;
+  color: var(--gray-700);
+}
+
+// Estadísticas de Ingresos
+.revenueStats {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.revenueStat {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem;
+  background: rgba(255, 152, 0, 0.05);
+  border-radius: 0.5rem;
+  border-left: 4px solid var(--primary);
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    background: rgba(255, 152, 0, 0.1);
+    transform: translateX(4px);
+  }
+}
+
+.revenueIcon {
+  flex-shrink: 0;
+  color: var(--primary);
+  opacity: 0.8;
+  transition: all 0.3s ease-in-out;
+  
+  svg {
+    width: 24px;
+    height: 24px;
+    filter: drop-shadow(0 2px 4px rgba(255, 152, 0, 0.2));
+    
+    &:hover {
+      transform: scale(1.1);
+      filter: drop-shadow(0 4px 8px rgba(255, 152, 0, 0.3));
+    }
+  }
+}
+
+.revenueInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.revenueValue {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.revenueLabel {
+  font-size: 0.875rem;
+  color: var(--gray-700);
+}
+
+// Métricas Clave
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.metric {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1rem;
+  background: linear-gradient(135deg, rgba(255, 152, 0, 0.1), rgba(255, 193, 7, 0.1));
+  border-radius: 0.5rem;
+  transition: all 0.3s ease-in-out;
+
+  &:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(135deg, rgba(255, 152, 0, 0.15), rgba(255, 193, 7, 0.15));
+  }
+}
+
+.metricIcon {
+  margin-bottom: 0.5rem;
+  color: var(--primary);
+  opacity: 0.9;
+  transition: all 0.3s ease-in-out;
+  
+  svg {
+    width: 28px;
+    height: 28px;
+    filter: drop-shadow(0 2px 4px rgba(255, 152, 0, 0.15));
+    
+    .metric:hover & {
+      transform: scale(1.15) rotate(5deg);
+      filter: drop-shadow(0 4px 8px rgba(255, 152, 0, 0.3));
+      color: var(--primary-hover);
+    }
+  }
+}
+
+.metricValue {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 0.25rem;
+}
+
+.metricLabel {
+  font-size: 0.75rem;
+  color: var(--gray-700);
+  font-weight: 500;
+}
+
+// Gráfico de Barras
+.barChart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  height: 150px;
+  padding: 0 1rem;
+  gap: 0.5rem;
+}
+
+.barItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  max-width: 60px;
+}
+
+.barContainer {
+  height: 100px;
+  width: 100%;
+  position: relative;
+  background: rgba(255, 152, 0, 0.1);
+  border-radius: 4px;
+  display: flex;
+  align-items: flex-end;
+}
+
+.bar {
+  width: 100%;
+  border-radius: 4px;
+  transition: height 0.6s ease-in-out;
+  min-height: 4px;
+}
+
+.barLabel {
+  font-size: 0.75rem;
+  color: var(--gray-700);
+  text-align: center;
+}
+
+.barValue {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+// Animaciones
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.chartCard {
+  animation: fadeInUp 0.6s ease-out;
+  
+  &:nth-child(1) { animation-delay: 0.1s; }
+  &:nth-child(2) { animation-delay: 0.2s; }
+  &:nth-child(3) { animation-delay: 0.3s; }
+  &:nth-child(4) { animation-delay: 0.4s; }
+}
+
+// Responsive
+@media (max-width: 640px) {
+  .chartsGrid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .chartCard {
+    padding: 1rem;
+    min-height: 220px;
+  }
+  
+  .progressNumber {
+    font-size: 1rem;
+  }
+  
+  .revenueValue {
+    font-size: 1rem;
+  }
+  
+  .metricValue {
+    font-size: 1.25rem;
+  }
+}
+
+// Accessibility
+@media (prefers-reduced-motion: reduce) {
+  .chartCard,
+  .progressBar,
+  .bar,
+  .revenueStat,
+  .metric {
+    animation: none;
+    transition: none;
+  }
+}
