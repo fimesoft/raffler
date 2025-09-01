@@ -6,11 +6,12 @@ import CreateRaffleForm from './CreateRaffleForm'
 import RaffleGrid from './RaffleGrid'
 import DashboardSidebar from './DashboardSidebar'
 import DashboardCharts from './DashboardCharts'
+import SalesManagement from './SalesManagement'
 import styles from './scss/DashboardContent.module.scss'
 
 export default function DashboardContent() {
   const { data: session } = useSession()
-  const [activeTab, setActiveTab] = useState<'overview' | 'create' | 'manage' | 'browse'>('overview')
+  const [activeTab, setActiveTab] = useState<'overview' | 'create' | 'manage' | 'browse' | 'sales'>('overview')
   const [sidebarOpen, setSidebarOpen] = useState(true)
 
   return (
@@ -95,6 +96,17 @@ export default function DashboardContent() {
                     </span>
                     Explorar Rifas
                   </button>
+                  <button 
+                    className={styles.secondaryButton}
+                    onClick={() => setActiveTab('sales')}
+                  >
+                    <span className={styles.buttonIcon}>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                      </svg>
+                    </span>
+                    Ver Ventas
+                  </button>
                 </div>
               </div>
             </div>
@@ -124,6 +136,12 @@ export default function DashboardContent() {
                 Administra las rifas que has creado
               </p>
               <RaffleGrid showUserRaffles={true} />
+            </div>
+          )}
+
+          {activeTab === 'sales' && (
+            <div className={styles.salesSection}>
+              <SalesManagement />
             </div>
           )}
         </main>

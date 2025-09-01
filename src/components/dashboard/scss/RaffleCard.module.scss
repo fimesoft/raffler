@@ -203,7 +203,7 @@
   flex-wrap: wrap;
 }
 
-.viewButton, .editButton, .deleteButton, .buyButton {
+.viewButton, .editButton, .deleteButton, .buyButton, .drawButton, .winnersButton {
   padding: 10px 16px;
   border: none;
   border-radius: 6px;
@@ -261,6 +261,32 @@
     background: #388e3c;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+  }
+}
+
+.drawButton {
+  background: linear-gradient(135deg, #9c27b0, #673ab7);
+  color: white;
+  font-weight: 600;
+  font-size: 0.9rem;
+  
+  &:hover:not(:disabled) {
+    background: linear-gradient(135deg, #7b1fa2, #512da8);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(156, 39, 176, 0.4);
+  }
+}
+
+.winnersButton {
+  background: linear-gradient(135deg, #ff9800, #f57c00);
+  color: white;
+  font-weight: 600;
+  font-size: 0.9rem;
+  
+  &:hover:not(:disabled) {
+    background: linear-gradient(135deg, #f57c00, #ef6c00);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.4);
   }
 }
 

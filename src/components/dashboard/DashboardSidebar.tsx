@@ -4,8 +4,8 @@ import { useState } from 'react'
 import styles from './scss/DashboardSidebar.module.scss'
 
 interface DashboardSidebarProps {
-  activeTab: 'overview' | 'create' | 'manage' | 'browse'
-  onTabChange: (tab: 'overview' | 'create' | 'manage' | 'browse') => void
+  activeTab: 'overview' | 'create' | 'manage' | 'browse' | 'sales'
+  onTabChange: (tab: 'overview' | 'create' | 'manage' | 'browse' | 'sales') => void
   onSidebarToggle?: (isOpen: boolean) => void
 }
 
@@ -56,6 +56,12 @@ const ChevronRightIcon = () => (
   </svg>
 )
 
+const SalesIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+  </svg>
+)
+
 export default function DashboardSidebar({ activeTab, onTabChange, onSidebarToggle }: DashboardSidebarProps) {
   const [isOpen, setIsOpen] = useState(true)
 
@@ -83,6 +89,12 @@ export default function DashboardSidebar({ activeTab, onTabChange, onSidebarTogg
       icon: <ListIcon />,
       label: 'Mis Rifas',
       description: 'Administra tus rifas'
+    },
+    {
+      key: 'sales' as const,
+      icon: <SalesIcon />,
+      label: 'Ventas',
+      description: 'Gestiona las compras de tus rifas'
     }
   ]
 

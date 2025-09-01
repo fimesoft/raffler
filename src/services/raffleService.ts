@@ -248,5 +248,151 @@ export const raffleService = {
     }
 
     return response.json();
+  },
+
+  // Obtener ventas de las rifas del usuario (requiere autenticación)
+  async getRaffleSales(token: string, params?: {
+    raffleId?: string;
+    page?: number;
+    limit?: number;
+    buyerEmail?: string;
+  }): Promise<{
+    sales: Array<{
+      id: string;
+      buyerId: string;
+      raffleId: string;
+      buyer: {
+        id: string;
+        name: string;
+        email: string;
+        documentNumber: string | null;
+        phone: string | null;
+      };
+      raffle: {
+        id: string;
+        title: string;
+        ticketPrice: number;
+        maxTickets: number;
+      };
+      numbers: number[];
+      ticketCount: number;
+      totalAmount: number;
+      purchaseDate: string;
+      status: string;
+    }>;
+    pagination: {
+      current: number;
+      pages: number;
+      total: number;
+      limit: number;
+    };
+  }> {
+    const headers = getAuthHeaders(token);
+    const queryParams = new URLSearchParams();
+    
+    if (params?.raffleId) queryParams.append('raffleId', params.raffleId);
+    if (params?.page) queryParams.append('page', params.page.toString());
+    if (params?.limit) queryParams.append('limit', params.limit.toString());
+    if (params?.buyerEmail) queryParams.append('buyerEmail', params.buyerEmail);
+
+    const response = await fetch(`${API_BASE_URL}/raffles/my/sales?${queryParams}`, {
+      method: 'GET',
+      headers
+    });
+
+    if (!response.ok) {
+      throw new Error('Error al obtener las ventas');
+    }
+
+    return response.json();
+  },
+
+  // Sortear ganadores de una rifa (requiere autenticación y ser el creador)
+  async drawRaffleWinners(raffleId: string, token: string): Promise<{
+    message: string;
+    draw: {
+      raffleId: string;
+      raffleTitle: string;
+      drawDate: string;
+      winners: Array<{
+        position: number;
+        ticketNumber: number;
+        ticketId: string;
+        buyer: {
+          id: string;
+          name: string;
+          email: string;
+          documentNumber: string | null;
+          phone: string | null;
+        };
+        medal: 'gold' | 'silver' | 'bronze';
+      }>;
+      totalParticipants: number;
+      drawNumber: string;
+    };
+  }> {
+    const headers = getAuthHeaders(token);
+
+    const response = await fetch(`${API_BASE_URL}/raffles/${raffleId}/draw-winners`, {
+      method: 'POST',
+      headers
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Error al sortear ganadores');
+    }
+
+    return response.json();
+  },
+
+  // Obtener resultados del sorteo de una rifa (requiere autenticación y ser el creador)
+  async getRaffleDrawResults(raffleId: string, token: string): Promise<{
+    raffleId: string;
+    raffleTitle?: string;
+    hasWinners: boolean;
+    message?: string;
+    winners?: Array<{
+      position: number;
+      ticketNumber: number;
+      ticketId: string;
+      buyer: {
+        id: string;
+        name: string;
+        email: string;
+        documentNumber: string | null;
+        phone: string | null;
+      };
+      medal: 'gold' | 'silver' | 'bronze';
+    }>;
+    winner?: {
+      position: number;
+      ticketNumber: number;
+      ticketId: string;
+      buyer: {
+        id: string;
+        name: string;
+        email: string;
+        documentNumber: string | null;
+        phone: string | null;
+      };
+      medal: 'gold';
+    };
+    totalParticipants?: number;
+    note?: string;
+  }> {
+    const headers = getAuthHeaders(token);
+
+    const response = await fetch(`${API_BASE_URL}/raffles/${raffleId}/draw-results`, {
+      method: 'GET',
+      headers
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Error al obtener resultados del sorteo');
+    }
+
+    return response.json();
   }
 };

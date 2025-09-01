@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { type Raffle, raffleService } from '../../services/raffleService'
 import { useAuth } from '../../contexts/AuthContext'
 import authService from '../../services/auth'
+import RaffleDrawer from './RaffleDrawer'
 import styles from './scss/RaffleCard.module.scss'
 
 interface RaffleCardProps {
@@ -15,6 +16,7 @@ interface RaffleCardProps {
 export default function RaffleCard({ raffle, showActions = false, onDeleted }: RaffleCardProps) {
   const { isAuthenticated } = useAuth()
   const [isDeleting, setIsDeleting] = useState(false)
+  const [showDrawer, setShowDrawer] = useState(false)
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('es-CO', {
@@ -97,7 +99,6 @@ export default function RaffleCard({ raffle, showActions = false, onDeleted }: R
       
       <div className={styles.content}>
         <div className={styles.header}>
-          {JSON.stringify(raffle)}
           <h3 className={styles.title}>{raffle.title}</h3>
           <div className={styles.status}>
             {isExpired ? (
@@ -166,6 +167,21 @@ export default function RaffleCard({ raffle, showActions = false, onDeleted }: R
               Ver Detalles
             </button>
             
+            {raffle.soldTickets >= 3 && !raffle.winnerId && (
+              <button 
+                className={styles.drawButton}
+                onClick={() => setShowDrawer(true)}
+              >
+                🎲 Sortear Ganadores
+              </button>
+            )}
+            
+            {raffle.winnerId && (
+              <button className={styles.winnersButton}>
+                🏆 Ver Ganadores
+              </button>
+            )}
+            
             {raffle.soldTickets === 0 && (
               <>
                 <button className={styles.editButton}>
@@ -191,6 +207,14 @@ export default function RaffleCard({ raffle, showActions = false, onDeleted }: R
           </div>
         )}
       </div>
+
+      {showDrawer && (
+        <RaffleDrawer
+          raffleId={raffle.id}
+          raffleTitle={raffle.title}
+          onClose={() => setShowDrawer(false)}
+        />
+      )}
     </div>
   )
 }

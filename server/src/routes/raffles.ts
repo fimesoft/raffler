@@ -10,7 +10,10 @@ import {
   deleteRaffle,
   purchaseTickets,
   purchaseTicketsValidation,
-  getRaffleTickets
+  getRaffleTickets,
+  getRaffleSales,
+  drawRaffleWinners,
+  getRaffleDrawResults
 } from '../controllers/raffleController';
 
 const router = express.Router();
@@ -152,6 +155,7 @@ router.get('/', getAllRaffles);
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.get('/my', authenticateToken, getUserRaffles);
+router.get('/my/sales', authenticateToken, getRaffleSales);
 
 /**
  * @swagger
@@ -393,5 +397,11 @@ router.get('/:id/tickets', getRaffleTickets);
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.post('/:id/purchase', authenticateToken, purchaseTicketsValidation, purchaseTickets);
+
+// Draw winners for a raffle (only by creator)
+router.post('/:id/draw-winners', authenticateToken, drawRaffleWinners);
+
+// Get raffle draw results (if available)
+router.get('/:id/draw-results', authenticateToken, getRaffleDrawResults);
 
 export default router;
