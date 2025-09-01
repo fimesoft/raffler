@@ -11,9 +11,30 @@ import authService from '../../services/auth'
 import styles from './scss/CreateRaffleForm.module.scss'
 
 const raffleSchema = z.object({
-  title: z.string().min(3, 'El título debe tener al menos 3 caracteres'),
-  description: z.string().min(10, 'La descripción debe tener al menos 10 caracteres'),
-  prize: z.string().min(3, 'Describe el premio'),
+  title: z.string()
+    .transform((str) => str.trim()) // Elimina espacios al principio y final
+    .pipe(
+      z.string()
+        .min(3, 'El título debe tener al menos 3 caracteres')
+        .max(200, 'El título no puede exceder 200 caracteres')
+        .regex(/^[a-zA-Z0-9\sáéíóúüñÁÉÍÓÚÜÑ'`´+ç.-;.?¿()/%&$·"*]+$/, 'El título solo puede contener letras, números y caracteres permitidos')
+    ),
+  description: z.string()
+    .transform((str) => str.trim()) // Elimina espacios al principio y final
+    .pipe(
+      z.string()
+        .min(10, 'La descripción debe tener al menos 10 caracteres')
+        .max(2000, 'La descripción no puede exceder 2000 caracteres')
+        .regex(/^[a-zA-Z0-9\sáéíóúüñÁÉÍÓÚÜÑ'`´+ç.-;.?¿()/%&$·"*]+$/, 'La descripción solo puede contener letras, números y caracteres permitidos')
+    ),
+  prize: z.string()
+    .transform((str) => str.trim()) // Elimina espacios al principio y final
+    .pipe(
+      z.string()
+        .min(3, 'Describe el premio')
+        .max(200, 'La descripción del premio no puede exceder 200 caracteres')
+        .regex(/^[a-zA-Z0-9\sáéíóúüñÁÉÍÓÚÜÑ'`´+ç.-;.?¿()/%&$·"*]+$/, 'El premio solo puede contener letras, números y caracteres permitidos')
+    ),
   ticketPrice: z.number().min(0.01, 'El precio debe ser mayor a 0'),
   maxTickets: z.number().min(1, 'Debe haber al menos 1 boleto'),
   endDate: z.string().min(1, 'Selecciona una fecha de finalización'),
@@ -35,23 +56,59 @@ export default function CreateRaffleForm({ onRaffleCreated }: CreateRaffleFormPr
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
     reset
   } = useForm<RaffleFormData>({
-    resolver: zodResolver(raffleSchema)
+    resolver: zodResolver(raffleSchema),
+    mode: 'onChange', // Valida mientras el usuario escribe
+    reValidateMode: 'onChange', // Re-valida en cada cambio
+    defaultValues: {
+      title: 'Moto MT09 2025 900km',
+      description: 'Se rifa Moto MT09 2025 900km como nueva',
+      prize: 'Moto MT09',
+      ticketPrice: 3000,
+      maxTickets: 100,
+      endDate: '2025-09-05T21:00',
+    }
   })
+
+  // Función para permitir letras, números, espacios y caracteres permitidos
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const allowedKeys = [
+      'Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'Home', 'End', 
+      'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'
+    ]
+    
+    // Permitir teclas de navegación y control
+    if (allowedKeys.includes(e.key)) {
+      return
+    }
+    
+    // Permitir Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X, Ctrl+Z
+    if (e.ctrlKey || e.metaKey) {
+      return
+    }
+    
+    // Regex que incluye todos los caracteres permitidos - coincide con el schema actualizado
+    const allowedPattern = /^[a-zA-Z0-9\sáéíóúüñÁÉÍÓÚÜÑ'`´+ç.-;.?¿()/%&$·"*]$/
+    
+    // Bloquear si no coincide con el patrón
+    if (!allowedPattern.test(e.key)) {
+      e.preventDefault()
+    }
+  }
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
       try {
-        // Opciones de compresión
+        // Opciones de compresión más agresivas para evitar errores
         const options = {
-          maxSizeMB: 0.5,          // Máximo 1MB
-          maxWidthOrHeight: 1280, // Máximo 1920px de ancho/alto
-          useWebWorker: true,    // Usar Web Worker para no bloquear UI
-          fileType: 'image/jpeg', // Convertir a JPEG para mejor compresión
-          quality: 0.7          // 80% de calidad (buen balance calidad/tamaño)
+          maxSizeMB: 0.3,          // Máximo 300KB
+          maxWidthOrHeight: 800,   // Máximo 800px de ancho/alto
+          useWebWorker: true,      // Usar Web Worker para no bloquear UI
+          fileType: 'image/jpeg',  // Convertir a JPEG para mejor compresión
+          quality: 0.6             // 60% de calidad (mayor compresión)
         }
 
         const compressedFile = await imageCompression(file, options)
@@ -75,8 +132,7 @@ export default function CreateRaffleForm({ onRaffleCreated }: CreateRaffleFormPr
 
   const onSubmit = async (data: RaffleFormData) => {
     if (!isAuthenticated) {
-      console.log(isAuthenticated);
-      alert('Debes iniciar sesión para crear una rifa ------- ^_^!')
+      alert('Debes iniciar sesión para crear una rifa')
       return
     }
 
@@ -132,8 +188,6 @@ export default function CreateRaffleForm({ onRaffleCreated }: CreateRaffleFormPr
           {success}
         </div>
       )}
-      
-      isAuthenticated: {JSON.stringify(isAuthenticated)}
       <div className={styles.section}>
         <h3>Información Básica</h3>
         
@@ -143,7 +197,7 @@ export default function CreateRaffleForm({ onRaffleCreated }: CreateRaffleFormPr
             id="title"
             type="text"
             {...register('title')}
-            placeholder="Ej: Rifa iPhone 15 Pro"
+            onKeyDown={handleKeyDown}
             className={errors.title ? styles.error : ''}
           />
           {errors.title && (
@@ -156,7 +210,7 @@ export default function CreateRaffleForm({ onRaffleCreated }: CreateRaffleFormPr
           <textarea
             id="description"
             {...register('description')}
-            placeholder="Describe los detalles de tu rifa..."
+            onKeyDown={handleKeyDown}
             rows={4}
             className={errors.description ? styles.error : ''}
           />
@@ -171,7 +225,7 @@ export default function CreateRaffleForm({ onRaffleCreated }: CreateRaffleFormPr
             id="prize"
             type="text"
             {...register('prize')}
-            placeholder="Ej: iPhone 15 Pro 256GB Azul"
+            onKeyDown={handleKeyDown}
             className={errors.prize ? styles.error : ''}
           />
           {errors.prize && (
@@ -189,9 +243,8 @@ export default function CreateRaffleForm({ onRaffleCreated }: CreateRaffleFormPr
             <input
               id="ticketPrice"
               type="number"
-              step="0.01"
+              step="1"
               {...register('ticketPrice', { valueAsNumber: true })}
-              placeholder="10.00"
               className={errors.ticketPrice ? styles.error : ''}
             />
             {errors.ticketPrice && (
@@ -205,7 +258,6 @@ export default function CreateRaffleForm({ onRaffleCreated }: CreateRaffleFormPr
               id="maxTickets"
               type="number"
               {...register('maxTickets', { valueAsNumber: true })}
-              placeholder="100"
               className={errors.maxTickets ? styles.error : ''}
             />
             {errors.maxTickets && (
@@ -273,10 +325,10 @@ export default function CreateRaffleForm({ onRaffleCreated }: CreateRaffleFormPr
         </button>
         <button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isSubmitting || !isValid}
           className={styles.primaryButton}
         >
-          {isSubmitting ? 'Creando...' : 'Crear Rifa'}
+          {isSubmitting ? 'Creando...' : !isValid ? 'Completar campos requeridos' : 'Crear Rifa'}
         </button>
       </div>
     </form>

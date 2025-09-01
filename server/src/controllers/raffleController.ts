@@ -30,7 +30,29 @@ export const createRaffleValidation = [
     
     return true;
   }),
-  body('image').optional().isURL().withMessage('Image must be a valid URL'),
+  body('image').optional().custom((value) => {
+    if (!value) return true; // Allow empty/null images
+    
+    // Check if it's a data URL
+    if (typeof value === 'string' && value.startsWith('data:image/')) {
+      // Calculate approximate size of base64 string (base64 is ~33% larger than original)
+      const base64Size = value.length * 0.75; // Approximate original size
+      const maxSizeBytes = 2 * 1024 * 1024; // 2MB limit
+      
+      if (base64Size > maxSizeBytes) {
+        throw new Error('Image size too large. Maximum allowed size is 2MB');
+      }
+      
+      return true;
+    }
+    
+    // If it's a URL, validate URL format
+    if (typeof value === 'string' && (value.startsWith('http://') || value.startsWith('https://'))) {
+      return true;
+    }
+    
+    throw new Error('Image must be a valid URL or base64 data URL');
+  }),
 ];
 
 // Create new raffle
