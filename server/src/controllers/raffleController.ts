@@ -364,8 +364,8 @@ export const deleteRaffle = async (req: Request, res: Response) => {
 // Validation rules for ticket purchase
 export const purchaseTicketsValidation = [
   body('numbers')
-    .isArray({ min: 1, max: 10 })
-    .withMessage('Numbers must be an array of 1 to 10 integers')
+    .isArray({ min: 1, max: 1000 })
+    .withMessage('Numbers must be an array of 1 to 1000 integers')
     .custom((numbers) => {
       // Check if all elements are positive integers
       if (!numbers.every((num: any) => Number.isInteger(num) && num > 0)) {
@@ -385,8 +385,15 @@ export const purchaseTicketsValidation = [
 // Purchase tickets for a raffle
 export const purchaseTickets = async (req: Request, res: Response) => {
   try {
+    console.log('🎫 Purchase tickets request received:', {
+      raffleId: req.params.id,
+      userId: req.user?.id,
+      numbers: req.body.numbers
+    });
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.error('❌ Validation errors:', errors.array());
       return res.status(400).json({ errors: errors.array() });
     }
 
@@ -503,8 +510,17 @@ export const purchaseTickets = async (req: Request, res: Response) => {
     });
 
   } catch (error) {
-    console.error('Purchase tickets error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('❌ Purchase tickets error:', error);
+    console.error('❌ Error details:', {
+      message: (error as Error)?.message,
+      stack: (error as Error)?.stack,
+      raffleId: req.params.id,
+      userId: req.user?.id
+    });
+    res.status(500).json({ 
+      error: 'Error interno del servidor al procesar la compra',
+      details: process.env.NODE_ENV === 'development' ? (error as Error)?.message : undefined
+    });
   }
 };
 
