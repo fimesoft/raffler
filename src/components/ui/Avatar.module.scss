@@ -1,0 +1,45 @@
+@import '../../styles/variables';
+
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: $color-primary;
+  color: $color-white;
+  font-family: $font-family-primary;
+  font-weight: 600;
+  flex-shrink: 0;
+  user-select: none;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    background-color: $color-primary-hover;
+    transform: scale(1.05);
+  }
+
+  .initials {
+    line-height: 1;
+    text-align: center;
+    font-style: normal;
+  }
+
+  // Size variants
+  &.sm {
+    width: 32px;
+    height: 32px;
+    font-size: 0.75rem;
+  }
+
+  &.md {
+    width: 40px;
+    height: 40px;
+    font-size: 0.875rem;
+  }
+
+  &.lg {
+    width: 48px;
+    height: 48px;
+    font-size: 1rem;
+  }
+}

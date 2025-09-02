@@ -158,13 +158,13 @@ export default function DashboardCharts() {
               <CircularProgress 
                 percentage={67} 
                 size={100} 
-                color="#22c55e"
+                color="#F2771A"
               />
               <div className={styles.statusLabel}>Activas</div>
             </div>
             <div className={styles.statusStats}>
               <div className={styles.statusItem}>
-                <div className={styles.statusDot} style={{ backgroundColor: '#22c55e' }}></div>
+                <div className={styles.statusDot} style={{ backgroundColor: '#F2771A' }}></div>
                 <span>Activas: {stats.activeRaffles}</span>
               </div>
               <div className={styles.statusItem}>
@@ -183,7 +183,7 @@ export default function DashboardCharts() {
               percentage={stats.conversionRate} 
               size={130} 
               strokeWidth={10}
-              color={stats.conversionRate > 70 ? '#22c55e' : stats.conversionRate > 40 ? '#ff9800' : '#ef4444'}
+              color={stats.conversionRate > 70 ? '#F2771A' : stats.conversionRate > 40 ? '#ff9800' : '#ef4444'}
             />
             <div className={styles.performanceInfo}>
               <div className={styles.performanceText}>

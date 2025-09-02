@@ -1,0 +1,53 @@
+// Global SCSS Variables Configuration
+
+// Font Configuration
+$font-family-primary: 'Poppins', sans-serif;
+
+// Color Configuration
+$color-primary: #F2771A;
+$color-black: #1C1919;
+
+// Additional color palette (optional for future use)
+$color-primary-hover: darken($color-primary, 10%);
+$color-primary-light: lighten($color-primary, 15%);
+$color-primary-dark: darken($color-primary, 15%);
+
+// Gray scale
+$color-gray-light: #f9fafb;
+$color-gray-medium: #e5e7eb;
+$color-gray-dark: #374151;
+
+// White
+$color-white: #ffffff;
+
+// Text colors
+$text-primary: $color-black;
+$text-secondary: $color-gray-dark;
+$text-light: $color-white;
+
+// Background colors
+$bg-primary: $color-white;
+$bg-secondary: $color-gray-light;
+
+// Shadow configurations
+$shadow-default: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+$shadow-primary: 0 4px 6px -1px rgba(242, 119, 26, 0.15);
+
+// Border radius
+$border-radius-sm: 4px;
+$border-radius-md: 8px;
+$border-radius-lg: 12px;
+
+// Spacing scale
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+$spacing-2xl: 48px;
+
+// Breakpoints
+$breakpoint-sm: 640px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 1024px;
+$breakpoint-xl: 1280px;

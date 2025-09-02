@@ -1,0 +1,118 @@
+@import '../../styles/variables';
+
+.avatarDropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.avatarButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  border-radius: $border-radius-md;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    background-color: rgba($color-primary, 0.1);
+    padding: 0.25rem;
+  }
+
+  &:focus {
+    outline: 2px solid $color-primary;
+    outline-offset: 2px;
+  }
+}
+
+.dropdownIcon {
+  color: $color-gray-dark;
+  transition: transform 0.2s ease-in-out;
+
+  &.open {
+    transform: rotate(180deg);
+  }
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  background: $color-white;
+  border: 1px solid $color-gray-medium;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-default;
+  min-width: 200px;
+  z-index: 1000;
+  animation: dropdownFadeIn 0.15s ease-out;
+  overflow: hidden;
+
+  @keyframes dropdownFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: none;
+  border: none;
+  text-align: left;
+  font-family: $font-family-primary;
+  font-size: 0.875rem;
+  color: $text-primary;
+  cursor: pointer;
+  transition: background-color 0.15s ease-in-out;
+
+  &:hover {
+    background-color: $color-gray-light;
+  }
+
+  &:focus {
+    background-color: $color-gray-light;
+    outline: none;
+  }
+
+  &.danger {
+    color: #dc2626;
+
+    &:hover {
+      background-color: rgba(220, 38, 38, 0.1);
+    }
+
+    .menuIcon {
+      color: #dc2626;
+    }
+  }
+}
+
+.menuIcon {
+  color: $color-gray-dark;
+  flex-shrink: 0;
+}
+
+.menuSeparator {
+  height: 1px;
+  background-color: $color-gray-medium;
+  margin: 0.25rem 0;
+}
+
+// Responsive adjustments
+@media (max-width: $breakpoint-md) {
+  .dropdownMenu {
+    right: -1rem;
+    min-width: 180px;
+  }
+}

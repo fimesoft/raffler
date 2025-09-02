@@ -45,50 +45,91 @@
 }
 
 .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   margin-bottom: 2rem;
+}
+
+.headerCards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+.headerCard {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
-  padding: 1.5rem;
   border-radius: 0.75rem;
   box-shadow: var(--shadow-orange);
-  border: 1px solid rgba(255, 152, 0, 0.1);
+  border: 1px solid #e5e7eb;
+  padding: 1.5rem;
+  transition: all 0.2s ease-in-out;
 
-  .welcome {
-    h1 {
-      font-size: 1.875rem;
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px -5px rgba(242, 119, 26, 0.2);
+  }
+
+  .cardContent {
+    h2 {
+      font-size: 1.25rem;
       font-weight: 600;
       color: var(--foreground);
-      margin-bottom: 0.25rem;
+      margin-bottom: 0.5rem;
     }
 
     p {
       color: var(--gray-700);
       font-size: 0.875rem;
+      margin: 0;
     }
   }
 
-  .userInfo {
+  // First card styling
+  &:first-child {
+    background: var(--primary);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    
+    .cardContent {
+      h2 {
+        color: white;
+        font-size: 1.5rem;
+        font-weight: 700;
+      }
+      
+      p {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1rem;
+        font-weight: 500;
+      }
+    }
+    
+    &:hover {
+      box-shadow: 0 8px 25px -5px rgba(242, 119, 26, 0.4);
+    }
+  }
+
+  // Empty cards have minimum height
+  &:nth-child(2),
+  &:nth-child(3) {
+    min-height: 100px;
     display: flex;
     align-items: center;
-  }
-
-  .avatar {
-    width: 2.5rem;
-    height: 2.5rem;
-    border-radius: 50%;
-    border: 2px solid var(--gray-200);
-  }
-
-  @media (max-width: 640px) {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-
-    .userInfo {
-      align-self: flex-end;
+    justify-content: center;
+    
+    .cardContent {
+      width: 100%;
+      text-align: center;
+      color: var(--gray-200);
+      
+      &::before {
+        content: "Próximamente...";
+        font-size: 0.875rem;
+        opacity: 0.5;
+      }
     }
   }
 }
@@ -101,7 +142,7 @@
   border-radius: 0.75rem;
   padding: 2rem;
   box-shadow: var(--shadow-orange);
-  border: 1px solid rgba(255, 152, 0, 0.1);
+  border: 1 solid #e5e7eb;
 
   @media (max-width: 768px) {
     padding: 1.5rem;
@@ -264,7 +305,7 @@
   background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(10px);
   color: var(--gray-700);
-  border: 1px solid rgba(255, 152, 0, 0.2);
+  border: 1 solid #e5e7eb;
   padding: 1rem 1.5rem;
   border-radius: 0.75rem;
   font-size: 1rem;

@@ -24,18 +24,25 @@ export default function DashboardContent() {
       
       <div className={`${styles.container} ${sidebarOpen ? styles.sidebarOpen : styles.sidebarClosed}`}>
         <header className={styles.header}>
-          <div className={styles.welcome}>
-            <h1>Dashboard</h1>
-            <p>Bienvenido, {session?.user?.name || 'Usuario'}</p>
-          </div>
-          <div className={styles.userInfo}>
-            {session?.user?.image && (
-              <img 
-                src={session.user.image} 
-                alt="Avatar" 
-                className={styles.avatar}
-              />
-            )}
+          <div className={styles.headerCards}>
+            <div className={styles.headerCard}>
+              <div className={styles.cardContent}>
+                <h2>Bienvenido al Dashboard</h2>
+                <p>Hola, {session?.user?.name || 'Usuario'}</p>
+              </div>
+            </div>
+            
+            <div className={styles.headerCard}>
+              <div className={styles.cardContent}>
+                {/* Contenido vacío para la segunda card */}
+              </div>
+            </div>
+            
+            <div className={styles.headerCard}>
+              <div className={styles.cardContent}>
+                {/* Contenido vacío para la tercera card */}
+              </div>
+            </div>
           </div>
         </header>
 
