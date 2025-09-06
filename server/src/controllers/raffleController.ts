@@ -878,3 +878,95 @@ export const getRaffleDrawResults = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Error al obtener resultados del sorteo' });
   }
 };
+
+// Get raffle status statistics
+export const getRaffleStatus = async (_req: Request, res: Response) => {
+  try {
+    const now = new Date();
+
+    const [activeRaffles, expiredRaffles] = await Promise.all([
+      prisma.raffle.count({
+        where: {
+          isActive: true,
+          endDate: {
+            gt: now
+          }
+        }
+      }),
+      prisma.raffle.count({
+        where: {
+          OR: [
+            {
+              isActive: false
+            },
+            {
+              endDate: {
+                lte: now
+              }
+            }
+          ]
+        }
+      })
+    ]);
+
+    res.json({
+      activeRaffles,
+      expiredRaffles
+    });
+
+  } catch (error) {
+    console.error('❌ Get raffle status error:', error);
+    res.status(500).json({ error: 'Error al obtener estadísticas de rifas' });
+  }
+};
+
+// Get user's raffle sales statistics
+export const getUserRaffleSales = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user!.id;
+
+    // Get user's raffles with ticket sales information
+    const userRaffles = await prisma.raffle.findMany({
+      where: {
+        userId: userId
+      },
+      select: {
+        id: true,
+        title: true,
+        ticketPrice: true,
+        maxTickets: true,
+        soldTickets: true,
+        isActive: true,
+        endDate: true,
+        createdAt: true
+      }
+    });
+
+    // Calculate statistics
+    const totalRaffles = userRaffles.length;
+    const activeRaffles = userRaffles.filter(raffle => raffle.isActive && new Date() <= raffle.endDate).length;
+    const expiredRaffles = userRaffles.filter(raffle => !raffle.isActive || new Date() > raffle.endDate).length;
+    
+    const totalTicketsSold = userRaffles.reduce((sum, raffle) => sum + raffle.soldTickets, 0);
+    const totalRevenue = userRaffles.reduce((sum, raffle) => sum + (raffle.soldTickets * raffle.ticketPrice), 0);
+    const totalPossibleTickets = userRaffles.reduce((sum, raffle) => sum + raffle.maxTickets, 0);
+    
+    const conversionRate = totalPossibleTickets > 0 ? Math.round((totalTicketsSold / totalPossibleTickets) * 100) : 0;
+    const averageTicketPrice = totalRaffles > 0 ? Math.round(userRaffles.reduce((sum, raffle) => sum + raffle.ticketPrice, 0) / totalRaffles) : 0;
+
+    res.json({
+      totalRaffles,
+      activeRaffles,
+      expiredRaffles,
+      totalTicketsSold,
+      totalRevenue,
+      averageTicketPrice,
+      conversionRate,
+      raffles: userRaffles
+    });
+
+  } catch (error) {
+    console.error('❌ Get user raffle sales error:', error);
+    res.status(500).json({ error: 'Error al obtener estadísticas de ventas del usuario' });
+  }
+};

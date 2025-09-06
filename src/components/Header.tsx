@@ -30,7 +30,7 @@ export default function Header() {
         <div className={styles.nav}>
           <div className={styles.logo}>
             <Link href="/">
-              Raffler
+              SorteaGo
             </Link>
           </div>
 

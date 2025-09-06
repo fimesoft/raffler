@@ -13,7 +13,9 @@ import {
   getRaffleTickets,
   getRaffleSales,
   drawRaffleWinners,
-  getRaffleDrawResults
+  getRaffleDrawResults,
+  getRaffleStatus,
+  getUserRaffleSales
 } from '../controllers/raffleController';
 
 const router = express.Router();
@@ -113,6 +115,30 @@ router.get('/', getAllRaffles);
 
 /**
  * @swagger
+ * /api/raffles/status:
+ *   get:
+ *     summary: Obtener estadísticas de estado de rifas
+ *     description: Retorna el número de rifas activas y finalizadas
+ *     tags: [Raffles]
+ *     responses:
+ *       200:
+ *         description: Estadísticas obtenidas exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 activeRaffles:
+ *                   type: integer
+ *                   description: Número de rifas activas
+ *                 expiredRaffles:
+ *                   type: integer
+ *                   description: Número de rifas finalizadas
+ */
+router.get('/status', getRaffleStatus);
+
+/**
+ * @swagger
  * /api/raffles/my:
  *   get:
  *     summary: Obtener rifas del usuario autenticado
@@ -156,6 +182,53 @@ router.get('/', getAllRaffles);
  */
 router.get('/my', authenticateToken, getUserRaffles);
 router.get('/my/sales', authenticateToken, getRaffleSales);
+
+/**
+ * @swagger
+ * /api/raffles/my/stats:
+ *   get:
+ *     summary: Obtener estadísticas de rifas del usuario autenticado
+ *     description: Retorna estadísticas completas de las rifas creadas por el usuario
+ *     tags: [Raffles]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Estadísticas obtenidas exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 totalRaffles:
+ *                   type: integer
+ *                   description: Número total de rifas creadas
+ *                 activeRaffles:
+ *                   type: integer
+ *                   description: Número de rifas activas
+ *                 expiredRaffles:
+ *                   type: integer
+ *                   description: Número de rifas finalizadas
+ *                 totalTicketsSold:
+ *                   type: integer
+ *                   description: Total de boletos vendidos
+ *                 totalRevenue:
+ *                   type: number
+ *                   description: Ingresos totales generados
+ *                 averageTicketPrice:
+ *                   type: number
+ *                   description: Precio promedio de boletos
+ *                 conversionRate:
+ *                   type: integer
+ *                   description: Porcentaje de conversión de ventas
+ *       401:
+ *         description: No autorizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+router.get('/my/stats', authenticateToken, getUserRaffleSales);
 
 /**
  * @swagger

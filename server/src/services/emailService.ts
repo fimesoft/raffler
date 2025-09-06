@@ -82,7 +82,7 @@ export const sendPasswordResetEmail = async (
         </head>
         <body>
           <div class="header">
-            <h1>🎲 Raffler</h1>
+            <h1>🎲 SorteaGo</h1>
             <h2>Restablecer Contraseña</h2>
           </div>
           
@@ -143,14 +143,14 @@ export const sendWelcomeEmail = async (email: string, userName: string) => {
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
-      subject: '¡Bienvenido a Raffler! 🎉',
+      subject: '¡Bienvenido a SorteaGo! 🎉',
       html: `
         <!DOCTYPE html>
         <html>
         <head>
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Bienvenido a Raffler</title>
+          <title>Bienvenido a SorteaGo</title>
           <style>
             body {
               font-family: Arial, sans-serif;
