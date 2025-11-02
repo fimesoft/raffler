@@ -425,6 +425,11 @@ export const purchaseTickets = async (req: Request, res: Response) => {
     
     // Convert string ID from params to integer
     const raffleId = parseInt(raffleIdParam);
+    
+    // Validate that the ID is a valid number
+    if (isNaN(raffleId)) {
+      return res.status(400).json({ error: 'Invalid raffle ID' });
+    }
 
     // Get user information for ticket creation
     const user = await prisma.user.findUnique({
@@ -504,7 +509,7 @@ export const purchaseTickets = async (req: Request, res: Response) => {
           tx.ticket.create({
             data: {
               number,
-              raffleId: raffle.id,
+              raffleId: raffleId,
               buyerId: userId,
               buyerDocument: user.documentNumber || 'N/A',
               buyerPhone: user.phone
@@ -530,7 +535,7 @@ export const purchaseTickets = async (req: Request, res: Response) => {
       message: 'Boletos comprados exitosamente',
       purchasedNumbers: numbers.sort((a: number, b: number) => a - b),
       totalCost,
-      transactionId: `tx_${Date.now()}_${userId.substring(0, 8)}`,
+      transactionId: `tx_${Date.now()}_${userId.toString().substring(0, 8)}`,
       ticketsRemaining: result.updatedRaffle.maxTickets - result.updatedRaffle.soldTickets
     });
 
@@ -663,7 +668,15 @@ export const getRaffleSales = async (req: Request, res: Response) => {
 // Get sold ticket numbers for a raffle
 export const getRaffleTickets = async (req: Request, res: Response) => {
   try {
-    const { id: raffleId } = req.params;
+    const { id: raffleIdParam } = req.params;
+    
+    // Convert string ID from params to integer for database query
+    const raffleId = parseInt(raffleIdParam);
+    
+    // Validate that the ID is a valid number
+    if (isNaN(raffleId)) {
+      return res.status(400).json({ error: 'Invalid raffle ID' });
+    }
 
     // Find the raffle
     const raffle = await prisma.raffle.findUnique({
@@ -687,7 +700,7 @@ export const getRaffleTickets = async (req: Request, res: Response) => {
     const soldNumbers = raffle.tickets.map(ticket => ticket.number);
 
     res.json({
-      raffleId,
+      raffleId: raffleIdParam, // Return as string for frontend compatibility
       soldNumbers,
       totalSold: soldNumbers.length,
       maxTickets: raffle.maxTickets,
