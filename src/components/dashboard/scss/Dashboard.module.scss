@@ -44,12 +44,18 @@
 
   @media (max-width: 640px) {
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-left: 0 !important;
+    padding: 1rem;
   }
 }
 
 /* Header Section */
 .header {
   margin-bottom: 2rem;
+  
+  @media (max-width: 768px) {
+    display: none;
+  }
 }
 
 .headerCards {
@@ -143,6 +149,16 @@
 
   @media (max-width: 768px) {
     padding: 1.5rem;
+  }
+
+  /* Content without header - gives more vertical space */
+  &.contentWithoutHeader {
+    margin-top: 0;
+    min-height: calc(100vh - 120px); /* Adjust for better spacing */
+    
+    @media (max-width: 768px) {
+      min-height: calc(100vh - 100px);
+    }
   }
 }
 

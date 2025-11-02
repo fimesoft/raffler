@@ -105,26 +105,43 @@ export default function DashboardSidebar({ activeTab, onTabChange, onSidebarTogg
   }
 
   return (
-    <aside className={`${styles.sidebar} ${isOpen ? styles.open : styles.closed}`}>
-      <div className={styles.sidebarHeader}>
-        <div className={styles.logo}>
-          {isOpen && <span className={styles.logoText}>Dashboard</span>}
-        </div>
-        <button 
+    <>
+      {/* Overlay for mobile */}
+      {isOpen && (
+        <div 
+          className={styles.overlay} 
           onClick={toggleSidebar}
-          className={styles.toggleButton}
-          aria-label={isOpen ? 'Cerrar sidebar' : 'Abrir sidebar'}
-        >
-          {isOpen ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-        </button>
-      </div>
+          aria-hidden="true"
+        />
+      )}
+      
+      <aside className={`${styles.sidebar} ${isOpen ? styles.open : styles.closed}`}>
+        <div className={styles.sidebarHeader}>
+          <div className={styles.logo}>
+            {isOpen && <span className={styles.logoText}>Dashboard</span>}
+          </div>
+          <button 
+            onClick={toggleSidebar}
+            className={styles.toggleButton}
+            aria-label={isOpen ? 'Cerrar sidebar' : 'Abrir sidebar'}
+          >
+            {isOpen ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+          </button>
+        </div>
 
       <nav className={styles.navigation}>
         <ul className={styles.menuList}>
           {menuItems.map((item) => (
             <li key={item.key} className={styles.menuItem}>
               <button
-                onClick={() => onTabChange(item.key)}
+                onClick={() => {
+                  onTabChange(item.key)
+                  // Close sidebar on mobile when item is clicked
+                  if (window.innerWidth <= 640) {
+                    setIsOpen(false)
+                    onSidebarToggle?.(false)
+                  }
+                }}
                 className={`${styles.menuButton} ${activeTab === item.key ? styles.active : ''}`}
                 title={!isOpen ? item.label : undefined}
                 aria-label={item.label}
@@ -165,5 +182,6 @@ export default function DashboardSidebar({ activeTab, onTabChange, onSidebarTogg
         </div>
       </div>
     </aside>
+    </>
   )
 }

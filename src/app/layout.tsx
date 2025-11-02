@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SorteaGo - Gestión de Rifas",
+  title: "Rifala - Gestión de Rifas",
   description: "Plataforma para gestionar rifas y sorteos de cualquier tipo",
 };
 

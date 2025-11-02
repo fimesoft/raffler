@@ -11,9 +11,10 @@ interface RaffleCardProps {
   raffle: Raffle
   showActions?: boolean
   onDeleted?: (raffleId: string) => void
+  onPurchaseClick?: (raffle: Raffle) => void
 }
 
-export default function RaffleCard({ raffle, showActions = false, onDeleted }: RaffleCardProps) {
+export default function RaffleCard({ raffle, showActions = false, onDeleted, onPurchaseClick }: RaffleCardProps) {
   const { isAuthenticated } = useAuth()
   const [isDeleting, setIsDeleting] = useState(false)
   const [showDrawer, setShowDrawer] = useState(false)
@@ -201,7 +202,10 @@ export default function RaffleCard({ raffle, showActions = false, onDeleted }: R
 
         {!showActions && !isExpired && (
           <div className={styles.actions}>
-            <button className={styles.buyButton}>
+            <button 
+              className={styles.buyButton}
+              onClick={() => onPurchaseClick?.(raffle)}
+            >
               Comprar Boletos
             </button>
           </div>
@@ -215,6 +219,7 @@ export default function RaffleCard({ raffle, showActions = false, onDeleted }: R
           onClose={() => setShowDrawer(false)}
         />
       )}
+
     </div>
   )
 }

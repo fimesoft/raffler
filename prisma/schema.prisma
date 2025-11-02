@@ -3,12 +3,12 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
-  id                String   @id @default(cuid())
+  id                Int      @id @default(autoincrement())
   email             String   @unique
   password          String?
   name              String?
@@ -56,8 +56,8 @@ enum DocumentType {
 }
 
 model Account {
-  id                String  @id @default(cuid())
-  userId            String
+  id                Int     @id @default(autoincrement())
+  userId            Int
   type              String
   provider          String
   providerAccountId String
@@ -76,9 +76,9 @@ model Account {
 }
 
 model Session {
-  id           String   @id @default(cuid())
+  id           Int      @id @default(autoincrement())
   sessionToken String   @unique
-  userId       String
+  userId       Int
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   
@@ -95,7 +95,7 @@ model VerificationToken {
 }
 
 model Raffle {
-  id          String   @id @default(cuid())
+  id          Int      @id @default(autoincrement())
   title       String
   description String
   prize       String
@@ -105,13 +105,13 @@ model Raffle {
   soldTickets Int      @default(0)
   endDate     DateTime
   isActive    Boolean  @default(true)
-  winnerId    String?
+  winnerId    Int?
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   
   // Relations
-  userId      String
+  userId      Int
   user        User     @relation(fields: [userId], references: [id])
   tickets     Ticket[]
   
@@ -119,11 +119,11 @@ model Raffle {
 }
 
 model Ticket {
-  id           String   @id @default(cuid())
+  id           Int      @id @default(autoincrement())
   number       Int      // Número del boleto (1, 2, 3, etc.)
-  raffleId     String
+  raffleId     Int
   raffle       Raffle   @relation(fields: [raffleId], references: [id], onDelete: Cascade)
-  buyerId      String   // ID del cliente que compró el boleto
+  buyerId      Int   // ID del cliente que compró el boleto
   buyer        User     @relation(fields: [buyerId], references: [id])
   status       TicketStatus @default(SOLD)
   

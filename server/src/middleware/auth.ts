@@ -5,7 +5,7 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 interface JWTPayload {
-  userId: string;
+  userId: number;
   email: string;
   iat: number;
   exp: number;
@@ -15,7 +15,7 @@ declare global {
   namespace Express {
     interface Request {
       user?: {
-        id: string;
+        id: number;
         email: string;
         name?: string | null;
       };

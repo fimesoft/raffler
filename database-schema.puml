@@ -1,0 +1,133 @@
+@startuml Raffler Database Schema
+
+!theme plain
+skinparam linetype ortho
+skinparam packageStyle rectangle
+
+' Define entities
+entity "User" as user {
+  * **id** : INT <<PK>>
+  --
+  * email : VARCHAR(255) <<UK>>
+  password : VARCHAR(255)
+  name : VARCHAR(255)
+  image : VARCHAR(255)
+  emailVerified : TIMESTAMP
+  * isActive : BOOLEAN
+  --
+  == Identificación ==
+  documentType : ENUM
+  documentNumber : VARCHAR(50) <<UK>>
+  phone : VARCHAR(20)
+  dateOfBirth : DATE
+  address : TEXT
+  city : VARCHAR(100)
+  country : VARCHAR(100)
+  --
+  == Verificación ==
+  * documentVerified : BOOLEAN
+  * phoneVerified : BOOLEAN
+  --
+  == Sistema ==
+  * createdAt : TIMESTAMP
+  * updatedAt : TIMESTAMP
+  resetToken : VARCHAR(255)
+  resetTokenExpires : TIMESTAMP
+}
+
+entity "Account" as account {
+  * **id** : INT <<PK>>
+  --
+  * userId : INT <<FK>>
+  * type : VARCHAR(50)
+  * provider : VARCHAR(50)
+  * providerAccountId : VARCHAR(255)
+  refresh_token : TEXT
+  access_token : TEXT
+  expires_at : INT
+  token_type : VARCHAR(50)
+  scope : VARCHAR(255)
+  id_token : TEXT
+  session_state : VARCHAR(255)
+  --
+  <<UK>> (provider, providerAccountId)
+}
+
+entity "Session" as session {
+  * **id** : INT <<PK>>
+  --
+  * sessionToken : VARCHAR(255) <<UK>>
+  * userId : INT <<FK>>
+  * expires : TIMESTAMP
+}
+
+entity "VerificationToken" as verification {
+  * identifier : VARCHAR(255)
+  * **token** : VARCHAR(255) <<UK>>
+  * expires : TIMESTAMP
+  --
+  <<UK>> (identifier, token)
+}
+
+entity "Raffle" as raffle {
+  * **id** : INT <<PK>>
+  --
+  * title : VARCHAR(255)
+  * description : TEXT
+  * prize : VARCHAR(255)
+  image : VARCHAR(255)
+  * ticketPrice : DECIMAL(10,2)
+  * maxTickets : INT
+  * soldTickets : INT
+  * endDate : TIMESTAMP
+  * isActive : BOOLEAN
+  winnerId : INT
+  --
+  == Sistema ==
+  * createdAt : TIMESTAMP
+  * updatedAt : TIMESTAMP
+  * userId : INT <<FK>>
+}
+
+entity "Ticket" as ticket {
+  * **id** : INT <<PK>>
+  --
+  * number : INT
+  * raffleId : INT <<FK>>
+  * buyerId : INT <<FK>>
+  * status : ENUM
+  --
+  == Comprador ==
+  * buyerDocument : VARCHAR(50)
+  buyerPhone : VARCHAR(20)
+  --
+  == Sistema ==
+  * purchaseDate : TIMESTAMP
+  * updatedAt : TIMESTAMP
+  --
+  <<UK>> (raffleId, number)
+}
+
+' Define enums
+note top of user : DocumentType\n• DNI\n• CC\n• CE\n• PASSPORT\n• NIT
+
+note bottom of ticket : TicketStatus\n• SOLD\n• RESERVED\n• WINNER\n• REFUNDED
+
+' Define relationships
+user ||--o{ account : "OAuth accounts"
+user ||--o{ session : "User sessions"
+user ||--o{ raffle : "Creates raffles"
+user ||--o{ ticket : "Purchases tickets"
+
+raffle ||--o{ ticket : "Contains tickets"
+raffle }o--|| user : "Winner (winnerId)"
+
+' Color coding
+user #lightblue
+raffle #lightgreen
+ticket #lightyellow
+account #lightgray
+session #lightgray
+verification #lightgray
+
+@enduml

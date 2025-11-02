@@ -39,6 +39,11 @@
       transform: translateX(-100%);
       width: 260px;
     }
+    
+    &.open {
+      transform: translateX(0);
+      z-index: 1000;
+    }
   }
 }
 
@@ -318,6 +323,22 @@
   opacity: 0.7;
 }
 
+// Overlay for mobile
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  display: none;
+  
+  @media (max-width: 640px) {
+    display: block;
+  }
+}
+
 // Mobile specific styles
 @media (max-width: 640px) {
   .sidebar.closed {
@@ -334,10 +355,19 @@
       top: 85px;
       left: 1rem;
       z-index: 1001;
-      background: rgba(255, 255, 255, 0.95);
+      background: var(--primary);
+      color: white;
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 152, 0, 0.2);
       box-shadow: var(--shadow-orange);
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      
+      &:hover {
+        background: var(--primary-hover);
+        transform: scale(1.1);
+      }
     }
   }
 }

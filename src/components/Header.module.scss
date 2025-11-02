@@ -136,48 +136,117 @@
   
   .mobileNav {
     display: block;
-    transition: all 0.3s ease-in-out;
-    overflow: hidden;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    z-index: 50;
+    transform-origin: top;
+    transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
     
     @media (min-width: 768px) {
       display: none;
     }
     
     &.closed {
-      max-height: 0;
+      transform: scaleY(0);
       opacity: 0;
+      pointer-events: none;
     }
     
     &.open {
-      max-height: 16rem;
+      transform: scaleY(1);
       opacity: 1;
+      pointer-events: auto;
     }
     
     .mobileNavContent {
-      padding: 0.5rem 0.5rem 0.75rem;
-      border-top: 1px solid var(--gray-200);
-      
-      @media (min-width: 640px) {
-        padding: 0.5rem 0.75rem 0.75rem;
-      }
+      padding: 1rem;
+      border-top: none;
+      max-height: calc(100vh - 80px);
+      overflow-y: auto;
       
       .mobileNavLinks {
         display: flex;
         flex-direction: column;
-        gap: 0.25rem;
+        gap: 0.5rem;
         
-        a {
-          display: block;
-          padding: 0.5rem 0.75rem;
+        a, button {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          padding: 0.75rem 1rem;
           color: var(--gray-700);
           text-decoration: none;
-          border-radius: 0.375rem;
-          transition: all 0.2s ease-in-out;
+          border-radius: 0.75rem;
+          transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+          border: none;
+          background: none;
+          cursor: pointer;
+          font-size: 1rem;
+          text-align: left;
+          width: 100%;
+          transform: translateY(0);
+          opacity: 1;
           
           &:hover {
             color: var(--primary);
-            background-color: var(--gray-50);
+            background-color: var(--primary-50);
+            transform: translateX(4px);
           }
+          
+          svg {
+            flex-shrink: 0;
+            color: var(--gray-500);
+            transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+          }
+          
+          &:hover svg {
+            color: var(--primary);
+            transform: scale(1.1);
+          }
+          
+          span {
+            font-weight: 500;
+          }
+        }
+      }
+    }
+  }
+  
+  // Ensure menu closes on larger screens
+  @media (min-width: 768px) {
+    &.open {
+      transform: scaleY(0);
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
+}
+
+// Responsive adjustments for smaller screens
+@media (max-width: 360px) {
+  .header {
+    .container {
+      padding: 0 0.75rem;
+    }
+    
+    .nav {
+      padding: 0.75rem 0;
+    }
+    
+    .mobileNav .mobileNavContent {
+      padding: 0.75rem;
+      
+      .navLink, .mobileLoginButton {
+        padding: 0.625rem 0.75rem;
+        font-size: 0.9rem;
+        
+        svg {
+          width: 18px;
+          height: 18px;
         }
       }
     }
@@ -197,13 +266,131 @@
   font-weight: 500;
 }
 
+// New mobile menu styles
 .mobileUserSection {
+  padding: 1rem 0 1.5rem 0;
+  border-bottom: 1px solid var(--gray-200);
+  margin-bottom: 1rem;
+  
+  .userInfo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    
+    @media (max-width: 320px) {
+      flex-direction: column;
+      text-align: center;
+      gap: 0.75rem;
+    }
+    
+    .userDetails {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      
+      .userName {
+        font-weight: 600;
+        font-size: 1.125rem;
+        color: var(--gray-900);
+        
+        @media (max-width: 360px) {
+          font-size: 1rem;
+        }
+      }
+      
+      .userEmail {
+        font-size: 0.875rem;
+        color: var(--gray-600);
+        word-break: break-all;
+        
+        @media (max-width: 360px) {
+          font-size: 0.8rem;
+        }
+      }
+    }
+  }
+}
+
+.mobileNavSection {
+  margin-bottom: 1.5rem;
+  
+  .navSectionTitle {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--gray-500);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+    padding: 0 1rem;
+  }
+}
+
+.navLink {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 0.75rem;
-  padding: 0.75rem;
-  border-bottom: 1px solid var(--gray-100);
+  padding: 0.75rem 1rem;
+  color: var(--gray-700);
+  text-decoration: none;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease-in-out;
+  
+  &:hover {
+    color: var(--primary);
+    background-color: var(--gray-50);
+  }
+  
+  svg {
+    flex-shrink: 0;
+    color: var(--gray-500);
+    transition: color 0.2s ease-in-out;
+  }
+  
+  &:hover svg {
+    color: var(--primary);
+  }
+  
+  span {
+    font-weight: 500;
+  }
+}
+
+// Updated mobile login button to match nav link style
+.mobileLoginButton {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  color: var(--primary);
+  text-decoration: none;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease-in-out;
+  border: 1px solid var(--primary);
+  background: var(--primary-50);
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: left;
+  width: 100%;
+  
+  &:hover {
+    background-color: var(--primary);
+    color: white;
+    
+    svg {
+      color: white;
+    }
+  }
+  
+  svg {
+    flex-shrink: 0;
+    color: var(--primary);
+    transition: color 0.2s ease-in-out;
+  }
+  
+  span {
+    font-weight: 600;
+  }
 }
 
 .loginButton, .logoutButton {

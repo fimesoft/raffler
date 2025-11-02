@@ -5,6 +5,7 @@ import { raffleService, type Raffle } from '../../services/raffleService'
 import { useAuth } from '../../contexts/AuthContext'
 import authService from '../../services/auth'
 import RaffleCard from './RaffleCard'
+import RaffleDetailModal from '../rifas/RaffleDetailModal'
 import styles from './scss/RaffleGrid.module.scss'
 
 interface RaffleGridProps {
@@ -19,6 +20,7 @@ export default function RaffleGrid({ showUserRaffles = false }: RaffleGridProps)
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [total, setTotal] = useState(0)
+  const [selectedRaffleForPurchase, setSelectedRaffleForPurchase] = useState<Raffle | null>(null)
 
   const loadRaffles = async (pageNumber = 1) => {
     try {
@@ -72,6 +74,20 @@ export default function RaffleGrid({ showUserRaffles = false }: RaffleGridProps)
   const handleRaffleDeleted = (raffleId: string) => {
     setRaffles(prev => prev.filter(raffle => raffle.id !== raffleId))
     setTotal(prev => prev - 1)
+  }
+
+  const handlePurchaseClick = (raffle: Raffle) => {
+    setSelectedRaffleForPurchase(raffle)
+  }
+
+  const handlePurchaseModalClose = () => {
+    setSelectedRaffleForPurchase(null)
+  }
+
+  const handleTicketPurchased = () => {
+    setSelectedRaffleForPurchase(null)
+    // Refresh the raffles to update sold tickets count
+    loadRaffles(page)
   }
 
   if (loading) {
@@ -145,6 +161,7 @@ export default function RaffleGrid({ showUserRaffles = false }: RaffleGridProps)
             raffle={raffle} 
             showActions={showUserRaffles}
             onDeleted={handleRaffleDeleted}
+            onPurchaseClick={handlePurchaseClick}
           />
         ))}
       </div>
@@ -187,6 +204,14 @@ export default function RaffleGrid({ showUserRaffles = false }: RaffleGridProps)
             Siguiente
           </button>
         </div>
+      )}
+
+      {selectedRaffleForPurchase && (
+        <RaffleDetailModal
+          raffle={selectedRaffleForPurchase}
+          onClose={handlePurchaseModalClose}
+          onTicketPurchased={handleTicketPurchased}
+        />
       )}
     </div>
   )

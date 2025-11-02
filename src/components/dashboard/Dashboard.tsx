@@ -299,94 +299,97 @@ export default function Dashboard() {
       />
       
       <div className={`${styles.container} ${sidebarOpen ? styles.sidebarOpen : styles.sidebarClosed}`}>
-        <header className={styles.header}>
-          <div className={styles.headerCards}>
-            <div className={styles.headerCard}>
-              <div className={styles.cardContent}>
-                <h2>Bienvenido al Dashboard</h2>
-                <p>Hola, {session?.user?.name || 'Usuario'}</p>
+        {/* Solo mostrar el header con estadísticas en overview, manage y sales */}
+        {activeTab !== 'create' && activeTab !== 'browse' && (
+          <header className={styles.header}>
+            <div className={styles.headerCards}>
+              <div className={styles.headerCard}>
+                <div className={styles.cardContent}>
+                  <h2>Bienvenido al Dashboard</h2>
+                  <p>Hola, {session?.user?.name || 'Usuario'}</p>
+                </div>
+              </div>
+              
+              <div className={styles.headerCard}>
+                <div className={styles.cardContent}>
+                  <h3 className={styles.chartTitle}>Estado de las Rifas</h3>
+                  {loadingStatus ? (
+                    <div className={styles.loading}>
+                      <div className={styles.spinner}></div>
+                      <p>Cargando...</p>
+                    </div>
+                  ) : statusError ? (
+                    <div className={styles.noData}>
+                      <p>{statusError}</p>
+                    </div>
+                  ) : (
+                    <div className={styles.statusContainer}>
+                      <div className={styles.statusChart}>
+                        <CircularProgress 
+                          percentage={stats.totalRaffles > 0 ? Math.round((stats.activeRaffles / stats.totalRaffles) * 100) : 0} 
+                          size={100} 
+                          color="#F2771A"
+                        />
+                        <div className={styles.statusLabel}>
+                          {stats.totalRaffles > 0 ? `${Math.round((stats.activeRaffles / stats.totalRaffles) * 100)}%` : '0%'} Activas
+                        </div>
+                      </div>
+                      <div className={styles.statusStats}>
+                        <div className={styles.statusItem}>
+                          <div className={styles.statusDot} style={{ backgroundColor: '#F2771A' }}></div>
+                          <span>Activas: {stats.activeRaffles}</span>
+                        </div>
+                        <div className={styles.statusItem}>
+                          <div className={styles.statusDot} style={{ backgroundColor: '#ef4444' }}></div>
+                          <span>Finalizadas: {stats.expiredRaffles}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              <div className={styles.headerCard}>
+                <div className={styles.cardContent}>
+                  <h3 className={styles.chartTitle}>Cantidad de Tickets Vendidos</h3>
+                  {loadingUserStats ? (
+                    <div className={styles.loading}>
+                      <div className={styles.spinner}></div>
+                      <p>Cargando...</p>
+                    </div>
+                  ) : userStatsError ? (
+                    <div className={styles.noData}>
+                      <p>{userStatsError}</p>
+                    </div>
+                  ) : (
+                    <div className={styles.statusContainer}>
+                      <div className={styles.statusChart}>
+                        <CircularProgress 
+                          percentage={stats.totalTicketsSold > 0 ? Math.min(100, Math.round((stats.totalTicketsSold / 100) * 100)) : 0} 
+                          size={100} 
+                          color="#22c55e"
+                        />
+                        <div className={styles.statusLabel}>Vendidos</div>
+                      </div>
+                      <div className={styles.statusStats}>
+                        <div className={styles.statusItem}>
+                          <div className={styles.statusDot} style={{ backgroundColor: '#22c55e' }}></div>
+                          <span>Total: {stats.totalTicketsSold}</span>
+                        </div>
+                        <div className={styles.statusItem}>
+                          <div className={styles.statusDot} style={{ backgroundColor: '#3b82f6' }}></div>
+                          <span>Ingresos: {formatCurrency(stats.totalRevenue)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
-            
-            <div className={styles.headerCard}>
-              <div className={styles.cardContent}>
-                <h3 className={styles.chartTitle}>Estado de las Rifas</h3>
-                {loadingStatus ? (
-                  <div className={styles.loading}>
-                    <div className={styles.spinner}></div>
-                    <p>Cargando...</p>
-                  </div>
-                ) : statusError ? (
-                  <div className={styles.noData}>
-                    <p>{statusError}</p>
-                  </div>
-                ) : (
-                  <div className={styles.statusContainer}>
-                    <div className={styles.statusChart}>
-                      <CircularProgress 
-                        percentage={stats.totalRaffles > 0 ? Math.round((stats.activeRaffles / stats.totalRaffles) * 100) : 0} 
-                        size={100} 
-                        color="#F2771A"
-                      />
-                      <div className={styles.statusLabel}>
-                        {stats.totalRaffles > 0 ? `${Math.round((stats.activeRaffles / stats.totalRaffles) * 100)}%` : '0%'} Activas
-                      </div>
-                    </div>
-                    <div className={styles.statusStats}>
-                      <div className={styles.statusItem}>
-                        <div className={styles.statusDot} style={{ backgroundColor: '#F2771A' }}></div>
-                        <span>Activas: {stats.activeRaffles}</span>
-                      </div>
-                      <div className={styles.statusItem}>
-                        <div className={styles.statusDot} style={{ backgroundColor: '#ef4444' }}></div>
-                        <span>Finalizadas: {stats.expiredRaffles}</span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-            
-            <div className={styles.headerCard}>
-              <div className={styles.cardContent}>
-                <h3 className={styles.chartTitle}>Cantidad de Tickets Vendidos</h3>
-                {loadingUserStats ? (
-                  <div className={styles.loading}>
-                    <div className={styles.spinner}></div>
-                    <p>Cargando...</p>
-                  </div>
-                ) : userStatsError ? (
-                  <div className={styles.noData}>
-                    <p>{userStatsError}</p>
-                  </div>
-                ) : (
-                  <div className={styles.statusContainer}>
-                    <div className={styles.statusChart}>
-                      <CircularProgress 
-                        percentage={stats.totalTicketsSold > 0 ? Math.min(100, Math.round((stats.totalTicketsSold / 100) * 100)) : 0} 
-                        size={100} 
-                        color="#22c55e"
-                      />
-                      <div className={styles.statusLabel}>Vendidos</div>
-                    </div>
-                    <div className={styles.statusStats}>
-                      <div className={styles.statusItem}>
-                        <div className={styles.statusDot} style={{ backgroundColor: '#22c55e' }}></div>
-                        <span>Total: {stats.totalTicketsSold}</span>
-                      </div>
-                      <div className={styles.statusItem}>
-                        <div className={styles.statusDot} style={{ backgroundColor: '#3b82f6' }}></div>
-                        <span>Ingresos: {formatCurrency(stats.totalRevenue)}</span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </header>
+          </header>
+        )}
 
-        <main className={styles.content}>
+        <main className={`${styles.content} ${(activeTab === 'create' || activeTab === 'browse') ? styles.contentWithoutHeader : ''}`}>
           {activeTab === 'overview' && (
             <div className={styles.overview}>
               {renderCharts()}

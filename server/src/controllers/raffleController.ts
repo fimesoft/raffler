@@ -419,9 +419,12 @@ export const purchaseTickets = async (req: Request, res: Response) => {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { id: raffleId } = req.params;
+    const { id: raffleIdParam } = req.params;
     const { numbers } = req.body;
     const userId = req.user!.id;
+    
+    // Convert string ID from params to integer
+    const raffleId = parseInt(raffleIdParam);
 
     // Get user information for ticket creation
     const user = await prisma.user.findUnique({
