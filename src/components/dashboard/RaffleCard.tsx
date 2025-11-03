@@ -100,7 +100,6 @@ export default function RaffleCard({ raffle, showActions = false, onDeleted, onP
       
       <div className={styles.content}>
         <div className={styles.header}>
-          <h3 className={styles.title}>{raffle.title}</h3>
           <div className={styles.status}>
             {isExpired ? (
               <span className={styles.statusExpired}>Finalizada</span>
@@ -109,26 +108,17 @@ export default function RaffleCard({ raffle, showActions = false, onDeleted, onP
             )}
           </div>
         </div>
-
-        <p className={styles.description}>
-          {raffle.description.length > 100 
-            ? `${raffle.description.substring(0, 100)}...` 
-            : raffle.description
-          }
-        </p>
-
-        <div className={styles.prize}>
-          <strong>Premio:</strong> {raffle.prize}
+        <div>
+          <h3 className={styles.title}>{raffle.title}</h3>
         </div>
 
         <div className={styles.details}>
           <div className={styles.detail}>
-            <span className={styles.label}>Precio por boleto:</span>
-            <span className={styles.value}>{formatPrice(raffle.ticketPrice)}</span>
+            <span className={styles.priceCurrent}>{formatPrice(raffle.ticketPrice)}</span>
           </div>
           
           <div className={styles.detail}>
-            <span className={styles.label}>Creado por:</span>
+            <span className={styles.label}>Organizador:</span>
             <span className={styles.value}>{raffle.user?.name}</span>
           </div>
         </div>
@@ -149,16 +139,17 @@ export default function RaffleCard({ raffle, showActions = false, onDeleted, onP
           </div>
         </div>
 
-        <div className={styles.timing}>
-          <div className={styles.timeRemaining}>
+          <div className={styles.timeRemaining} title={`Termina: ${formatDate(raffle.endDate)}`}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
               <polyline points="12,6 12,12 16,14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
             {timeRemaining}
           </div>
+        <div className={styles.timing}>
+          
           <div className={styles.endDate}>
-            Termina: {formatDate(raffle.endDate)}
+            
           </div>
         </div>
 

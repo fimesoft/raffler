@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
 import AvatarDropdown from '@/components/ui/AvatarDropdown'
-import styles from './Header.module.scss'
+import styles from './scss/Header.module.scss'
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)

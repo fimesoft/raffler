@@ -1,3 +1,5 @@
+@import '../../../styles/variables';
+
 .card {
   background: white;
   border-radius: 12px;
@@ -5,6 +7,9 @@
   overflow: hidden;
   transition: all 0.3s ease;
   border: 1px solid #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  width: $card-width;
   
   &:hover {
     transform: translateY(-4px);
@@ -34,7 +39,8 @@
 .image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center;
   transition: transform 0.3s ease;
   
   .card:hover & {
@@ -44,6 +50,9 @@
 
 .content {
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
 .header {
@@ -68,25 +77,35 @@
 }
 
 .statusActive {
-  background: #4caf50;
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 0.7rem;
-  font-weight: 500;
+  background: transparent;
+  color: var(--primary);
+  border: 2px solid var(--primary);
+  padding: 3px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  transition: all 0.2s ease;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .statusExpired {
-  background: #f44336;
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 0.7rem;
-  font-weight: 500;
+  background: transparent;
+  color: #dc2626;
+  border: 2px solid #dc2626;
+  padding: 6px 16px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  
+  &:hover {
+    background: #dc2626;
+    color: white;
+  }
 }
 
 .description {
@@ -135,6 +154,12 @@
   font-weight: 600;
 }
 
+.priceCurrent {
+  font-size: 24px;
+  font-weight: 500;
+  color: #333;
+}
+
 .progress {
   margin-bottom: 16px;
 }
@@ -170,19 +195,10 @@
   text-align: center;
 }
 
-.timing {
-  margin-bottom: 20px;
-  padding: 12px;
-  background: #f8f9fa;
-  border-radius: 8px;
-  border-left: 4px solid #ff9800;
-}
-
 .timeRemaining {
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-bottom: 4px;
   font-size: 0.85rem;
   font-weight: 600;
   color: #ff9800;
@@ -192,10 +208,6 @@
   }
 }
 
-.endDate {
-  font-size: 0.75rem;
-  color: #666;
-}
 
 .actions {
   display: flex;
@@ -251,16 +263,16 @@
 }
 
 .buyButton {
-  background: #4caf50;
+  background: var(--primary);
   color: white;
   font-weight: 600;
   flex: 1;
   max-width: none;
   
   &:hover:not(:disabled) {
-    background: #388e3c;
+    background: var(--primary-hover);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+    box-shadow: 0 4px 12px rgba(242, 119, 26, 0.3);
   }
 }
 

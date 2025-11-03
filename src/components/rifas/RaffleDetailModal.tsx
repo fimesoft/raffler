@@ -130,17 +130,11 @@ export default function RaffleDetailModal({ raffle, onClose, onTicketPurchased }
         </div>
 
         <div className={styles.modalContent}>
-          {raffle.image && (
-            <div className={styles.imageContainer}>
-              <img src={raffle.image} alt={raffle.title} />
-            </div>
-          )}
-
           <div className={styles.raffleInfo}>
-            <div className={styles.prize}>
+            {/*<div className={styles.prize}>
               <h3>Premio</h3>
               <p>{raffle.prize}</p>
-            </div>
+            </div>*/}
 
             <div className={styles.description}>
               <h3>Descripción</h3>

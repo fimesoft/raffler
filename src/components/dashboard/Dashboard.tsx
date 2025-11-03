@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
+import { useSearchParams } from 'next/navigation'
 import CreateRaffleForm from './CreateRaffleForm'
 import RaffleGrid from './RaffleGrid'
 import DashboardSidebar from './DashboardSidebar'
@@ -97,6 +98,7 @@ interface UserRaffleStatsResponse {
 
 export default function Dashboard() {
   const { data: session } = useSession()
+  const searchParams = useSearchParams()
   const [activeTab, setActiveTab] = useState<'overview' | 'create' | 'manage' | 'browse' | 'sales'>('overview')
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [raffleStatus, setRaffleStatus] = useState<RaffleStatusResponse | null>(null)
@@ -118,6 +120,14 @@ export default function Dashboard() {
   }
   
   const loading = false
+
+  // Handle URL query parameters for active tab
+  useEffect(() => {
+    const tab = searchParams.get('tab')
+    if (tab && ['overview', 'create', 'manage', 'browse', 'sales'].includes(tab)) {
+      setActiveTab(tab as 'overview' | 'create' | 'manage' | 'browse' | 'sales')
+    }
+  }, [searchParams])
 
   // Fetch raffle status from API
   useEffect(() => {
@@ -199,7 +209,6 @@ export default function Dashboard() {
     return (
       <div className={styles.chartsContainer}>
         <div className={styles.chartsGrid}>
-          {/* Rendimiento de Ventas */}
           <div className={styles.chartCard}>
             <h3 className={styles.chartTitle}>Rendimiento de Ventas</h3>
             <div className={styles.performanceContainer}>
@@ -217,7 +226,6 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Resumen Financiero */}
           <div className={styles.chartCard}>
             <h3 className={styles.chartTitle}>Resumen Financiero</h3>
             <div className={styles.revenueStats}>
@@ -389,7 +397,7 @@ export default function Dashboard() {
           </header>
         )}
 
-        <main className={`${styles.content} ${(activeTab === 'create' || activeTab === 'browse') ? styles.contentWithoutHeader : ''}`}>
+        <main className={`${styles.content}`}>
           {activeTab === 'overview' && (
             <div className={styles.overview}>
               {renderCharts()}
@@ -406,7 +414,7 @@ export default function Dashboard() {
                         <line x1="5" y1="12" x2="19" y2="12"/>
                       </svg>
                     </span>
-                    Crear Nueva Rifa
+                    Crear Nueva Rifa ---
                   </button>
                   <button 
                     className={styles.secondaryButton}

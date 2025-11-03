@@ -153,7 +153,7 @@ export default function CreateRaffleForm({ onRaffleCreated }: CreateRaffleFormPr
       const raffleData = {
         title: data.title,
         description: data.description,
-        prize: data.prize,
+        prize: data.title,
         ticketPrice: data.ticketPrice,
         maxTickets: data.maxTickets,
         endDate: data.endDate,
@@ -192,7 +192,7 @@ export default function CreateRaffleForm({ onRaffleCreated }: CreateRaffleFormPr
         <h3>Información Básica</h3>
         
         <div className={styles.inputGroup}>
-          <label htmlFor="title">Título de la Rifa *</label>
+          <label htmlFor="title">Premio de la Rifa *</label>
           <input
             id="title"
             type="text"
@@ -219,7 +219,7 @@ export default function CreateRaffleForm({ onRaffleCreated }: CreateRaffleFormPr
           )}
         </div>
 
-        <div className={styles.inputGroup}>
+        {/*<div className={styles.inputGroup}>
           <label htmlFor="prize">Premio *</label>
           <input
             id="prize"
@@ -231,7 +231,8 @@ export default function CreateRaffleForm({ onRaffleCreated }: CreateRaffleFormPr
           {errors.prize && (
             <span className={styles.errorMessage}>{errors.prize.message}</span>
           )}
-        </div>
+        </div>*/}
+
       </div>
 
       <div className={styles.section}>

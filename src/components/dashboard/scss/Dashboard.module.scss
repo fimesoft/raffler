@@ -54,7 +54,8 @@
   margin-bottom: 2rem;
   
   @media (max-width: 768px) {
-    display: none;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
   }
 }
 
@@ -646,7 +647,7 @@
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+/*@media (max-width: 768px) {
   .chartCard {
     padding: 1rem;
     min-height: 220px;
@@ -663,10 +664,10 @@
   .metricValue {
     font-size: 1.25rem;
   }
-}
+}*/
 
 /* Accessibility */
-@media (prefers-reduced-motion: reduce) {
+/*@media (prefers-reduced-motion: reduce) {
   .chartCard,
   .headerCard,
   .spinner,
@@ -675,4 +676,4 @@
     animation: none;
     transition: none;
   }
-}
+}*/
