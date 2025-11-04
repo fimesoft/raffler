@@ -1,4 +1,4 @@
-@import '../../../styles/variables';
+@import '../../../styles/_variables';
 
 .numberSelector {
   background: rgba(255, 255, 255, 0.8);
@@ -33,7 +33,7 @@
     .searchInput {
       width: 100%;
       padding: 0.75rem 0.75rem 0.75rem 2.75rem;
-      border: 2px solid rgba(255, 152, 0, 0.2);
+      border: 1px solid $color-border-gray;
       border-radius: 0.5rem;
       background: white;
       font-size: 0.875rem;
@@ -41,8 +41,6 @@
 
       &:focus {
         outline: none;
-        border-color: var(--primary);
-        box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.1);
       }
 
       &::placeholder {
@@ -61,18 +59,15 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    background: rgba(239, 68, 68, 0.1);
-    border: 1px solid rgba(239, 68, 68, 0.3);
+    background: none;
+    border: none;
     color: #dc2626;
     padding: 0.5rem 0.75rem;
     border-radius: 0.5rem;
     cursor: pointer;
     font-size: 0.875rem;
-    font-weight: 500;
-    transition: all 0.2s ease-in-out;
 
     &:hover {
-      background: rgba(239, 68, 68, 0.15);
       border-color: #dc2626;
     }
 
@@ -87,7 +82,7 @@
   display: flex;
   justify-content: center;
   gap: 2rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.5rem;
   padding: 1rem;
 
   .legendItem {
@@ -111,7 +106,7 @@
     }
 
     &.selectedColor {
-      background: linear-gradient(135deg, #22c55e, #16a34a);
+      background: #22c55e;
     }
 
     &.soldColor {
@@ -155,7 +150,7 @@
 }
 
 .number {
-  aspect-ratio: 1;
+  aspect-ratio: 1.4/1;
   background: white;
   border: 2px solid rgba(255, 152, 0, 0.2);
   border-radius: 0.5rem;
@@ -169,7 +164,7 @@
   justify-content: center;
   position: relative;
 
-  &:hover:not(:disabled) {
+  &:hover:not(:disabled):not(.selected) {
     border-color: var(--primary);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(255, 152, 0, 0.2);

@@ -1,4 +1,4 @@
-@import '../../../styles/variables';
+@import '../../../styles/_variables';
 
 .modalOverlay {
   position: fixed;
@@ -191,7 +191,7 @@
 
 .numberSelection {
   h3 {
-    font-size: 1.25rem;
+    font-size: 16px;
     font-weight: 600;
     color: var(--foreground);
     margin-bottom: 1.5rem;
@@ -393,14 +393,14 @@
 
     .amount {
       font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--primary);
+      font-weight: 600;
     }
   }
 
   .actions {
     display: flex;
-    gap: 1rem;
+    gap: 1.5rem;
+    justify-content: flex-end;
 
   .loadingNumbers {
     display: flex;
@@ -425,27 +425,29 @@
   }
 
     .cancelButton {
-      flex: 1;
       padding: 0.875rem 1.5rem;
       background: rgba(255, 255, 255, 0.8);
-      border: 2px solid rgba(255, 152, 0, 0.3);
+      border: 2px solid $color-primary;
       color: var(--gray-700);
       border-radius: 0.75rem;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s ease-in-out;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      min-width: 160px;
 
       &:hover {
-        background: rgba(255, 152, 0, 0.1);
         border-color: var(--primary);
         color: var(--primary);
       }
     }
 
     .purchaseButton {
-      flex: 2;
       padding: 0.875rem 1.5rem;
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      background: var(--primary);
       color: white;
       border: none;
       border-radius: 0.75rem;
@@ -457,6 +459,7 @@
       justify-content: center;
       gap: 0.5rem;
       box-shadow: 0 4px 15px -3px rgba(255, 152, 0, 0.4);
+      min-width: 160px;
 
       &:hover:not(:disabled) {
         transform: translateY(-2px);
