@@ -109,18 +109,22 @@ export default function RaffleCard({ raffle, showActions = false, onDeleted, onP
           </div>
         </div>
         <div>
-          <h3 className={styles.title}>{raffle.title}</h3>
+          <h3 className={styles.title} title="Premio">{raffle.title}</h3>
         </div>
 
-        <div className={styles.details}>
+        <div className={styles.details} title="Precio">
           <div className={styles.detail}>
             <span className={styles.priceCurrent}>{formatPrice(raffle.ticketPrice)}</span>
           </div>
           
-          <div className={styles.detail}>
-            <span className={styles.label}>Organizador:</span>
+          <div className={styles.detail} title="Organizador">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z" fill="#F2771A"/>
+              <path d="M12 14C7.58172 14 4 17.5817 4 22H20C20 17.5817 16.4183 14 12 14Z" fill="#F2771A"/>
+            </svg>
             <span className={styles.value}>{raffle.user?.name}</span>
           </div>
+
         </div>
 
         <div className={styles.progress}>
@@ -146,12 +150,6 @@ export default function RaffleCard({ raffle, showActions = false, onDeleted, onP
             </svg>
             {timeRemaining}
           </div>
-        <div className={styles.timing}>
-          
-          <div className={styles.endDate}>
-            
-          </div>
-        </div>
 
         {showActions && (
           <div className={styles.actions}>
