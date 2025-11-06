@@ -495,6 +495,233 @@
   to { transform: rotate(360deg); }
 }
 
+// Payment Selection Styles
+.paymentSelection {
+  h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--foreground);
+    margin-bottom: 0.75rem;
+  }
+
+  .paymentInstructions {
+    color: var(--gray-600);
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+  }
+}
+
+.paymentMethods {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.paymentMethod {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: white;
+  border: 2px solid $color-border-gray;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  text-align: left;
+  width: 100%;
+
+  &:hover {
+    border-color: var(--primary);
+    background: rgba(255, 152, 0, 0.05);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.15);
+  }
+
+  &.selected {
+    border-color: var(--primary);
+    background: rgba(255, 152, 0, 0.1);
+    box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.1);
+  }
+
+  .paymentMethodIcon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 152, 0, 0.1);
+    border-radius: 0.5rem;
+    color: var(--primary);
+    flex-shrink: 0;
+
+    svg {
+      stroke-width: 2;
+    }
+  }
+
+  .paymentMethodInfo {
+    flex: 1;
+
+    h4 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--foreground);
+      margin: 0 0 0.25rem 0;
+    }
+
+    p {
+      font-size: 0.875rem;
+      color: var(--gray-600);
+      margin: 0;
+    }
+  }
+
+  .checkmark {
+    width: 24px;
+    height: 24px;
+    background: var(--primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+}
+
+.bankDetails {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background: rgba(59, 130, 246, 0.05);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 0.75rem;
+  animation: slideDown 0.3s ease-out;
+
+  h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--foreground);
+    margin: 0 0 1rem 0;
+  }
+
+  .bankInfo {
+    margin-bottom: 1rem;
+  }
+
+  .bankInfoRow {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .bankLabel {
+      font-weight: 500;
+      color: var(--gray-600);
+    }
+
+    .bankValue {
+      font-weight: 600;
+      color: var(--foreground);
+      text-align: right;
+    }
+  }
+
+  .bankNote {
+    display: flex;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: rgba(59, 130, 246, 0.1);
+    border-radius: 0.5rem;
+    margin-top: 1rem;
+
+    svg {
+      color: #3b82f6;
+      flex-shrink: 0;
+      margin-top: 0.125rem;
+    }
+
+    p {
+      color: var(--gray-700);
+      line-height: 1.5;
+      margin: 0;
+      font-size: 0.875rem;
+
+      strong {
+        color: var(--primary);
+      }
+    }
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.orderSummary {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background: $bg-color-gray;
+  border: 1px solid $color-border-gray;
+  border-radius: 0.75rem;
+
+  h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--foreground);
+    margin: 0 0 1rem 0;
+  }
+
+  .summaryRow {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid $color-border-gray;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    span {
+      font-size: 0.9375rem;
+      color: var(--gray-700);
+
+      &:last-child {
+        font-weight: 600;
+        color: var(--foreground);
+      }
+    }
+
+    &.summaryTotal {
+      margin-top: 0.5rem;
+      padding-top: 1rem;
+      border-top: 2px solid var(--primary);
+
+      span {
+        font-size: 1.125rem;
+        font-weight: 600;
+
+        &:last-child {
+          color: var(--primary);
+        }
+      }
+    }
+  }
+}
+
 // Responsive
 @media (max-width: 768px) {
   .modalOverlay {
@@ -537,6 +764,48 @@
 
   .quantitySelector .quantityControls {
     justify-content: center;
+  }
+
+  .paymentMethod {
+    padding: 1rem;
+
+    .paymentMethodIcon {
+      width: 40px;
+      height: 40px;
+
+      svg {
+        width: 24px;
+        height: 24px;
+      }
+    }
+
+    .paymentMethodInfo {
+      h4 {
+        font-size: 0.9375rem;
+      }
+
+      p {
+        font-size: 0.8125rem;
+      }
+    }
+  }
+
+  .bankDetails {
+    padding: 1rem;
+
+    .bankInfoRow {
+      flex-direction: column;
+      gap: 0.25rem;
+      padding: 0.5rem 0;
+
+      .bankValue {
+        text-align: left;
+      }
+    }
+  }
+
+  .orderSummary {
+    padding: 1rem;
   }
 }
 

@@ -154,6 +154,29 @@ export default function SalesManagement() {
     return sales.reduce((total, sale) => total + sale.totalAmount, 0)
   }
 
+  const handleConfirmPayment = async (raffleId: string, buyerId: string) => {
+    if (!confirm('¿Confirmar que el pago ha sido recibido? Esto cambiará el estado de RESERVADO a VENDIDO.')) {
+      return
+    }
+
+    try {
+      const token = authService.getAccessToken()
+      if (!token) {
+        alert('Error de autenticación')
+        return
+      }
+
+      await raffleService.confirmTicketPayment(raffleId, buyerId, token)
+      alert('Pago confirmado exitosamente')
+
+      // Recargar las ventas
+      loadSales(page, selectedRaffle, buyerEmailFilter)
+    } catch (error) {
+      console.error('Error confirming payment:', error)
+      alert(error instanceof Error ? error.message : 'Error al confirmar el pago')
+    }
+  }
+
   if (!isAuthenticated) {
     return (
       <div className={styles.container}>
@@ -305,6 +328,7 @@ export default function SalesManagement() {
                   <th>Total</th>
                   <th>Fecha</th>
                   <th>Estado</th>
+                  <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -362,8 +386,24 @@ export default function SalesManagement() {
                     <td className={styles.date}>{formatDate(sale.purchaseDate)}</td>
                     <td>
                       <span className={`${styles.status} ${styles[sale.status.toLowerCase()]}`}>
-                        {sale.status === 'SOLD' ? 'Vendido' : sale.status}
+                        {sale.status === 'SOLD' ? 'Vendido' :
+                         sale.status === 'RESERVED' ? 'Reservado' :
+                         sale.status}
                       </span>
+                    </td>
+                    <td className={styles.actions}>
+                      {sale.status === 'RESERVED' && (
+                        <button
+                          onClick={() => handleConfirmPayment(sale.raffleId, sale.buyerId)}
+                          className={styles.confirmButton}
+                          title="Confirmar pago"
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <polyline points="20 6 9 17 4 12"/>
+                          </svg>
+                          Confirmar
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}

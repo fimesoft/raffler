@@ -1,13 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import authService from '@/services/auth'
 import { raffleService } from '@/services/raffleService'
 import styles from './scss/RaffleDrawer.module.scss'
 
 interface Winner {
-  position: number
   ticketNumber: number
   ticketId: string
   buyer: {
@@ -17,14 +17,13 @@ interface Winner {
     documentNumber: string | null
     phone: string | null
   }
-  medal: 'gold' | 'silver' | 'bronze'
 }
 
 interface DrawResult {
   raffleId: string
   raffleTitle: string
   drawDate: string
-  winners: Winner[]
+  winner: Winner
   totalParticipants: number
   drawNumber: string
 }
@@ -35,25 +34,15 @@ interface RaffleDrawerProps {
   onClose: () => void
 }
 
-// Medal Icons
-const GoldMedalIcon = () => (
-  <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
-    <circle cx="12" cy="12" r="8" fill="#FFD700" stroke="#FFA500" strokeWidth="2"/>
-    <text x="12" y="16" textAnchor="middle" fontSize="12" fill="#B8860B" fontWeight="bold">1</text>
-  </svg>
-)
-
-const SilverMedalIcon = () => (
-  <svg width="35" height="35" viewBox="0 0 24 24" fill="none">
-    <circle cx="12" cy="12" r="7" fill="#C0C0C0" stroke="#A9A9A9" strokeWidth="2"/>
-    <text x="12" y="16" textAnchor="middle" fontSize="11" fill="#696969" fontWeight="bold">2</text>
-  </svg>
-)
-
-const BronzeMedalIcon = () => (
-  <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
-    <circle cx="12" cy="12" r="6" fill="#CD7F32" stroke="#A0522D" strokeWidth="2"/>
-    <text x="12" y="16" textAnchor="middle" fontSize="10" fill="#8B4513" fontWeight="bold">3</text>
+// Trophy Icon
+const TrophyIcon = () => (
+  <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+    <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" stroke="#FFD700" strokeWidth="2"/>
+    <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" stroke="#FFD700" strokeWidth="2"/>
+    <path d="M4 22h16" stroke="#FFA500" strokeWidth="2"/>
+    <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" stroke="#FFD700" strokeWidth="2"/>
+    <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" stroke="#FFD700" strokeWidth="2"/>
+    <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" fill="#FFD700" stroke="#FFA500" strokeWidth="2"/>
   </svg>
 )
 
@@ -64,6 +53,18 @@ export default function RaffleDrawer({ raffleId, raffleTitle, onClose }: RaffleD
   const [error, setError] = useState<string | null>(null)
   const [currentNumber, setCurrentNumber] = useState<number | null>(null)
   const [spinPhase, setSpinPhase] = useState<'idle' | 'spinning' | 'slowing' | 'stopped'>('idle')
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+    // Prevenir scroll del body cuando el modal está abierto
+    document.body.style.overflow = 'hidden'
+
+    return () => {
+      setMounted(false)
+      document.body.style.overflow = ''
+    }
+  }, [])
 
   const handleDrawWinners = async () => {
     if (!isAuthenticated) {
@@ -100,10 +101,10 @@ export default function RaffleDrawer({ raffleId, raffleTitle, onClose }: RaffleD
               const response = await raffleService.drawRaffleWinners(raffleId, token)
               setDrawResult(response.draw)
               setSpinPhase('stopped')
-              
-              // Show the first winner number briefly
-              if (response.draw.winners.length > 0) {
-                setCurrentNumber(response.draw.winners[0].ticketNumber)
+
+              // Show the winner number
+              if (response.draw.winner) {
+                setCurrentNumber(response.draw.winner.ticketNumber)
               }
             } catch (err) {
               setError(err instanceof Error ? err.message : 'Error al sortear ganadores')
@@ -121,30 +122,17 @@ export default function RaffleDrawer({ raffleId, raffleTitle, onClose }: RaffleD
     }
   }
 
-  const renderMedal = (medal: 'gold' | 'silver' | 'bronze') => {
-    switch (medal) {
-      case 'gold':
-        return <GoldMedalIcon />
-      case 'silver':
-        return <SilverMedalIcon />
-      case 'bronze':
-        return <BronzeMedalIcon />
+
+  if (!mounted) return null
+
+  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      onClose()
     }
   }
 
-  const getMedalText = (medal: 'gold' | 'silver' | 'bronze') => {
-    switch (medal) {
-      case 'gold':
-        return '🥇 Primer Lugar'
-      case 'silver':
-        return '🥈 Segundo Lugar'
-      case 'bronze':
-        return '🥉 Tercer Lugar'
-    }
-  }
-
-  return (
-    <div className={styles.overlay}>
+  const drawerContent = (
+    <div className={styles.overlay} onClick={handleOverlayClick}>
       {/* Header fijo en la parte superior */}
       <div className={styles.floatingHeader}>
         <h2>Sorteo de Ganadores - {raffleTitle}</h2>
@@ -180,9 +168,9 @@ export default function RaffleDrawer({ raffleId, raffleTitle, onClose }: RaffleD
               {!isDrawing && spinPhase === 'idle' && (
                 <div className={styles.drawSection}>
                   <p className={styles.instructionText}>
-                    ¡Listo para sortear 3 ganadores!
+                    ¡Listo para sortear al ganador!
                   </p>
-                  <button 
+                  <button
                     onClick={handleDrawWinners}
                     className={styles.drawButton}
                     disabled={isDrawing}
@@ -227,30 +215,49 @@ export default function RaffleDrawer({ raffleId, raffleTitle, onClose }: RaffleD
               </div>
             </div>
 
-            <div className={styles.winners}>
-              {drawResult.winners.map((winner, index) => (
-                <div key={winner.ticketId} className={`${styles.winner} ${styles[winner.medal]}`}>
-                  <div className={styles.medal}>
-                    {renderMedal(winner.medal)}
-                  </div>
-                  <div className={styles.winnerInfo}>
-                    <h4>{getMedalText(winner.medal)}</h4>
-                    <div className={styles.ticketNumber}>
-                      Boleto #{winner.ticketNumber.toString().padStart(3, '0')}
-                    </div>
-                    <div className={styles.buyerInfo}>
-                      <p><strong>{winner.buyer.name}</strong></p>
-                      <p>{winner.buyer.email}</p>
-                      {winner.buyer.documentNumber && (
-                        <p>Doc: {winner.buyer.documentNumber}</p>
-                      )}
-                      {winner.buyer.phone && (
-                        <p>Tel: {winner.buyer.phone}</p>
-                      )}
-                    </div>
-                  </div>
+            <div className={styles.winnerContainer}>
+              <div className={styles.trophy}>
+                <TrophyIcon />
+              </div>
+              <div className={styles.winnerCard}>
+                <h4 className={styles.winnerTitle}>🎊 GANADOR 🎊</h4>
+                <div className={styles.ticketNumber}>
+                  Boleto #{drawResult.winner.ticketNumber.toString().padStart(3, '0')}
                 </div>
-              ))}
+                <div className={styles.winnerDetails}>
+                  <div className={styles.winnerName}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                      <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                    <strong>{drawResult.winner.buyer.name}</strong>
+                  </div>
+                  <div className={styles.winnerEmail}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                      <polyline points="22,6 12,13 2,6"/>
+                    </svg>
+                    {drawResult.winner.buyer.email}
+                  </div>
+                  {drawResult.winner.buyer.documentNumber && (
+                    <div className={styles.winnerDoc}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14,2 14,8 20,8"/>
+                      </svg>
+                      Doc: {drawResult.winner.buyer.documentNumber}
+                    </div>
+                  )}
+                  {drawResult.winner.buyer.phone && (
+                    <div className={styles.winnerPhone}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                      </svg>
+                      Tel: {drawResult.winner.buyer.phone}
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
 
             <div className={styles.actions}>
@@ -263,4 +270,6 @@ export default function RaffleDrawer({ raffleId, raffleTitle, onClose }: RaffleD
       )}
     </div>
   )
+
+  return createPortal(drawerContent, document.body)
 }

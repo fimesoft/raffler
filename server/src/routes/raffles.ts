@@ -15,7 +15,8 @@ import {
   drawRaffleWinners,
   getRaffleDrawResults,
   getRaffleStatus,
-  getUserRaffleSales
+  getUserRaffleSales,
+  confirmTicketPayment
 } from '../controllers/raffleController';
 
 const router = express.Router();
@@ -476,5 +477,8 @@ router.post('/:id/draw-winners', authenticateToken, drawRaffleWinners);
 
 // Get raffle draw results (if available)
 router.get('/:id/draw-results', authenticateToken, getRaffleDrawResults);
+
+// Confirm ticket payment (update RESERVED to SOLD)
+router.patch('/:raffleId/confirm-payment/:buyerId', authenticateToken, confirmTicketPayment);
 
 export default router;

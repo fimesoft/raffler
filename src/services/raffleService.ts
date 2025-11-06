@@ -201,7 +201,12 @@ export const raffleService = {
   },
 
   // Comprar boletos de una rifa (requiere autenticación)
-  async purchaseTickets(raffleId: string, numbers: number[], token: string): Promise<{
+  async purchaseTickets(
+    raffleId: string,
+    numbers: number[],
+    token: string,
+    paymentMethod?: 'mercadopago' | 'bank_transfer'
+  ): Promise<{
     message: string;
     purchasedNumbers: number[];
     totalCost: number;
@@ -213,7 +218,10 @@ export const raffleService = {
     const response = await fetch(`${API_BASE_URL}/raffles/${raffleId}/purchase`, {
       method: 'POST',
       headers,
-      body: JSON.stringify({ numbers })
+      body: JSON.stringify({
+        numbers,
+        paymentMethod: paymentMethod || 'mercadopago'
+      })
     });
 
     if (!response.ok) {
@@ -307,15 +315,14 @@ export const raffleService = {
     return response.json();
   },
 
-  // Sortear ganadores de una rifa (requiere autenticación y ser el creador)
+  // Sortear ganador de una rifa (requiere autenticación y ser el creador)
   async drawRaffleWinners(raffleId: string, token: string): Promise<{
     message: string;
     draw: {
       raffleId: string;
       raffleTitle: string;
       drawDate: string;
-      winners: Array<{
-        position: number;
+      winner: {
         ticketNumber: number;
         ticketId: string;
         buyer: {
@@ -325,8 +332,7 @@ export const raffleService = {
           documentNumber: string | null;
           phone: string | null;
         };
-        medal: 'gold' | 'silver' | 'bronze';
-      }>;
+      };
       totalParticipants: number;
       drawNumber: string;
     };
@@ -350,23 +356,9 @@ export const raffleService = {
   async getRaffleDrawResults(raffleId: string, token: string): Promise<{
     raffleId: string;
     raffleTitle?: string;
-    hasWinners: boolean;
+    hasWinner: boolean;
     message?: string;
-    winners?: Array<{
-      position: number;
-      ticketNumber: number;
-      ticketId: string;
-      buyer: {
-        id: string;
-        name: string;
-        email: string;
-        documentNumber: string | null;
-        phone: string | null;
-      };
-      medal: 'gold' | 'silver' | 'bronze';
-    }>;
     winner?: {
-      position: number;
       ticketNumber: number;
       ticketId: string;
       buyer: {
@@ -376,10 +368,8 @@ export const raffleService = {
         documentNumber: string | null;
         phone: string | null;
       };
-      medal: 'gold';
     };
     totalParticipants?: number;
-    note?: string;
   }> {
     const headers = getAuthHeaders(token);
 
@@ -391,6 +381,26 @@ export const raffleService = {
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.error || 'Error al obtener resultados del sorteo');
+    }
+
+    return response.json();
+  },
+
+  // Confirmar pago de tickets (actualizar de RESERVED a SOLD)
+  async confirmTicketPayment(raffleId: string, buyerId: string, token: string): Promise<{
+    message: string;
+    ticketsConfirmed: number;
+  }> {
+    const headers = getAuthHeaders(token);
+
+    const response = await fetch(`${API_BASE_URL}/raffles/${raffleId}/confirm-payment/${buyerId}`, {
+      method: 'PATCH',
+      headers
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Error al confirmar el pago');
     }
 
     return response.json();

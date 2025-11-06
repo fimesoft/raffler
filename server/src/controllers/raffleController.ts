@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, TicketStatus } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -393,15 +393,19 @@ export const purchaseTicketsValidation = [
       if (!numbers.every((num: any) => Number.isInteger(num) && num > 0)) {
         throw new Error('All numbers must be positive integers');
       }
-      
+
       // Check for duplicates
       const uniqueNumbers = new Set(numbers);
       if (uniqueNumbers.size !== numbers.length) {
         throw new Error('Numbers must be unique');
       }
-      
+
       return true;
     }),
+  body('paymentMethod')
+    .optional()
+    .isIn(['mercadopago', 'bank_transfer'])
+    .withMessage('Payment method must be either mercadopago or bank_transfer'),
 ];
 
 // Purchase tickets for a raffle
@@ -420,7 +424,7 @@ export const purchaseTickets = async (req: Request, res: Response) => {
     }
 
     const { id: raffleIdParam } = req.params;
-    const { numbers } = req.body;
+    const { numbers, paymentMethod = 'mercadopago' } = req.body;
     const userId = req.user!.id;
     
     // Convert string ID from params to integer
@@ -501,6 +505,9 @@ export const purchaseTickets = async (req: Request, res: Response) => {
     // Calculate total cost
     const totalCost = numbers.length * raffle.ticketPrice;
 
+    // Determine ticket status based on payment method
+    const ticketStatus = paymentMethod === 'bank_transfer' ? TicketStatus.RESERVED : TicketStatus.SOLD;
+
     // Start transaction to create tickets and update raffle
     const result = await prisma.$transaction(async (tx) => {
       // Create tickets
@@ -512,7 +519,8 @@ export const purchaseTickets = async (req: Request, res: Response) => {
               raffleId: raffleId,
               buyerId: userId,
               buyerDocument: user.documentNumber || 'N/A',
-              buyerPhone: user.phone
+              buyerPhone: user.phone,
+              status: ticketStatus
             }
           })
         )
@@ -531,12 +539,17 @@ export const purchaseTickets = async (req: Request, res: Response) => {
       return { createdTickets, updatedRaffle };
     });
 
+    const message = paymentMethod === 'bank_transfer'
+      ? 'Boletos reservados exitosamente'
+      : 'Boletos comprados exitosamente';
+
     res.status(201).json({
-      message: 'Boletos comprados exitosamente',
+      message,
       purchasedNumbers: numbers.sort((a: number, b: number) => a - b),
       totalCost,
       transactionId: `tx_${Date.now()}_${userId.toString().substring(0, 8)}`,
-      ticketsRemaining: result.updatedRaffle.maxTickets - result.updatedRaffle.soldTickets
+      ticketsRemaining: result.updatedRaffle.maxTickets - result.updatedRaffle.soldTickets,
+      status: ticketStatus
     });
 
   } catch (error) {
@@ -716,8 +729,15 @@ export const getRaffleTickets = async (req: Request, res: Response) => {
 // Draw winners for a raffle (only by creator)
 export const drawRaffleWinners = async (req: Request, res: Response) => {
   try {
-    const { id: raffleId } = req.params;
+    const { id: raffleIdParam } = req.params;
     const userId = req.user!.id;
+
+    // Convert string ID to integer
+    const raffleId = parseInt(raffleIdParam);
+
+    if (isNaN(raffleId)) {
+      return res.status(400).json({ error: 'Invalid raffle ID' });
+    }
 
     // Find the raffle and verify ownership
     const raffle = await prisma.raffle.findFirst({
@@ -747,67 +767,66 @@ export const drawRaffleWinners = async (req: Request, res: Response) => {
     }
 
     // Check if raffle has enough sold tickets for drawing
-    if (raffle.tickets.length < 3) {
-      return res.status(400).json({ 
-        error: 'At least 3 tickets must be sold to draw winners' 
+    if (raffle.tickets.length < 1) {
+      return res.status(400).json({
+        error: 'At least 1 ticket must be sold to draw a winner'
       });
     }
 
-    // Check if winners have already been drawn
+    // Check if winner has already been drawn
     if (raffle.winnerId) {
-      return res.status(400).json({ 
-        error: 'Winners have already been drawn for this raffle' 
+      return res.status(400).json({
+        error: 'Winner has already been drawn for this raffle'
       });
     }
 
     // Create a shuffled array of all sold tickets
     const soldTickets = [...raffle.tickets];
-    
+
     // Fisher-Yates shuffle algorithm
     for (let i = soldTickets.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [soldTickets[i], soldTickets[j]] = [soldTickets[j], soldTickets[i]];
     }
 
-    // Select 3 winners (or all available tickets if less than 3)
-    const winnersCount = Math.min(3, soldTickets.length);
-    const winners = [];
+    // Select the winner (first ticket after shuffle)
+    const winnerTicket = soldTickets[0];
 
-    for (let i = 0; i < winnersCount; i++) {
-      const ticket = soldTickets[i];
-      const position = i + 1; // 1st, 2nd, 3rd place
-      
-      winners.push({
-        position,
-        ticketNumber: ticket.number,
-        ticketId: ticket.id,
-        buyer: ticket.buyer,
-        medal: position === 1 ? 'gold' : position === 2 ? 'silver' : 'bronze'
-      });
-    }
+    const winner = {
+      ticketNumber: winnerTicket.number,
+      ticketId: winnerTicket.id.toString(),
+      buyer: winnerTicket.buyer
+    };
 
-    // Update the raffle with the first place winner ID (for compatibility)
+    // Update the raffle with the winner ID
     await prisma.raffle.update({
       where: { id: raffleId },
       data: {
-        winnerId: winners[0].buyer.id,
+        winnerId: winner.buyer.id,
         isActive: false // Close the raffle after drawing
       }
     });
 
-    // Store the draw results (you might want to create a winners table for this)
-    // For now, we'll just return the results
+    // Mark the winning ticket with WINNER status
+    await prisma.ticket.update({
+      where: { id: winnerTicket.id },
+      data: {
+        status: TicketStatus.WINNER
+      }
+    });
+
+    // Store the draw results
     const drawResult = {
-      raffleId,
+      raffleId: raffleId.toString(),
       raffleTitle: raffle.title,
       drawDate: new Date(),
-      winners,
+      winner,
       totalParticipants: raffle.tickets.length,
       drawNumber: `${Date.now()}`
     };
 
     res.json({
-      message: 'Winners drawn successfully',
+      message: 'Winner drawn successfully',
       draw: drawResult
     });
 
@@ -820,8 +839,15 @@ export const drawRaffleWinners = async (req: Request, res: Response) => {
 // Get raffle draw results (if available)
 export const getRaffleDrawResults = async (req: Request, res: Response) => {
   try {
-    const { id: raffleId } = req.params;
+    const { id: raffleIdParam } = req.params;
     const userId = req.user!.id;
+
+    // Convert string ID to integer
+    const raffleId = parseInt(raffleIdParam);
+
+    if (isNaN(raffleId)) {
+      return res.status(400).json({ error: 'Invalid raffle ID' });
+    }
 
     // Find the raffle and verify ownership
     const raffle = await prisma.raffle.findFirst({
@@ -856,35 +882,31 @@ export const getRaffleDrawResults = async (req: Request, res: Response) => {
     // If no winner has been drawn yet
     if (!raffle.winnerId) {
       return res.json({
-        raffleId,
-        hasWinners: false,
-        message: 'No winners have been drawn yet'
+        raffleId: raffleId.toString(),
+        hasWinner: false,
+        message: 'No winner has been drawn yet'
       });
     }
 
-    // Since we don't have a winners table yet, we can't recreate the full draw results
-    // But we can return the winner information
+    // Find the winner ticket
     const winnerTicket = raffle.tickets.find(ticket => ticket.buyerId === raffle.winnerId);
 
     if (winnerTicket) {
       res.json({
-        raffleId,
+        raffleId: raffleId.toString(),
         raffleTitle: raffle.title,
-        hasWinners: true,
+        hasWinner: true,
         winner: {
-          position: 1,
           ticketNumber: winnerTicket.number,
-          ticketId: winnerTicket.id,
-          buyer: winnerTicket.buyer,
-          medal: 'gold'
+          ticketId: winnerTicket.id.toString(),
+          buyer: winnerTicket.buyer
         },
-        totalParticipants: raffle.tickets.length,
-        note: 'Legacy draw result - only first place winner available'
+        totalParticipants: raffle.tickets.length
       });
     } else {
       res.json({
-        raffleId,
-        hasWinners: false,
+        raffleId: raffleId.toString(),
+        hasWinner: false,
         message: 'Winner data not found'
       });
     }
@@ -984,5 +1006,87 @@ export const getUserRaffleSales = async (req: Request, res: Response) => {
   } catch (error) {
     console.error('❌ Get user raffle sales error:', error);
     res.status(500).json({ error: 'Error al obtener estadísticas de ventas del usuario' });
+  }
+};
+
+// Confirm ticket payment (update status from RESERVED to SOLD)
+export const confirmTicketPayment = async (req: Request, res: Response) => {
+  try {
+    const { raffleId: raffleIdParam, buyerId: buyerIdParam } = req.params;
+    const userId = req.user!.id;
+
+    console.log('🔍 Confirming payment:', { raffleIdParam, buyerIdParam, userId });
+
+    // Convert string IDs to integers
+    const raffleId = parseInt(raffleIdParam);
+    const buyerId = parseInt(buyerIdParam);
+
+    // Validate IDs
+    if (isNaN(raffleId) || isNaN(buyerId)) {
+      return res.status(400).json({ error: 'IDs inválidos' });
+    }
+
+    console.log('🔢 Parsed IDs:', { raffleId, buyerId });
+
+    // Verify that the raffle belongs to the authenticated user
+    const raffle = await prisma.raffle.findFirst({
+      where: {
+        id: raffleId,
+        userId: userId
+      }
+    });
+
+    console.log('🎰 Raffle found:', raffle ? `ID: ${raffle.id}, Title: ${raffle.title}` : 'Not found');
+
+    if (!raffle) {
+      return res.status(404).json({ error: 'Rifa no encontrada o acceso denegado' });
+    }
+
+    // Check how many RESERVED tickets exist for this buyer and raffle
+    const reservedTickets = await prisma.ticket.findMany({
+      where: {
+        raffleId: raffleId,
+        buyerId: buyerId,
+        status: TicketStatus.RESERVED
+      }
+    });
+
+    console.log('🎫 Reserved tickets found:', reservedTickets.length, reservedTickets.map(t => t.number));
+
+    // Update all RESERVED tickets for this buyer and raffle to SOLD
+    const updateResult = await prisma.ticket.updateMany({
+      where: {
+        raffleId: raffleId,
+        buyerId: buyerId,
+        status: TicketStatus.RESERVED
+      },
+      data: {
+        status: TicketStatus.SOLD
+      }
+    });
+
+    console.log('✅ Update result:', updateResult);
+
+    if (updateResult.count === 0) {
+      return res.status(400).json({
+        error: 'No se encontraron boletos reservados para confirmar'
+      });
+    }
+
+    res.json({
+      message: 'Pago confirmado exitosamente',
+      ticketsConfirmed: updateResult.count
+    });
+
+  } catch (error) {
+    console.error('❌ Confirm ticket payment error:', error);
+    console.error('❌ Error details:', {
+      message: (error as Error)?.message,
+      stack: (error as Error)?.stack
+    });
+    res.status(500).json({
+      error: 'Error al confirmar el pago',
+      details: process.env.NODE_ENV === 'development' ? (error as Error)?.message : undefined
+    });
   }
 };
