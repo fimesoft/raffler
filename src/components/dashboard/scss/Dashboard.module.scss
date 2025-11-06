@@ -81,7 +81,6 @@
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px -5px rgba(242, 119, 26, 0.2);
   }
 
   .cardContent {
@@ -118,9 +117,9 @@
       }
     }
     
-    &:hover {
+    /*&:hover {
       box-shadow: 0 8px 25px -5px rgba(242, 119, 26, 0.4);
-    }
+    }*/
   }
 
   // Empty cards have minimum height

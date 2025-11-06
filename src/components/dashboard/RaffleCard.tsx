@@ -162,13 +162,13 @@ export default function RaffleCard({ raffle, showActions = false, onDeleted, onP
                 className={styles.drawButton}
                 onClick={() => setShowDrawer(true)}
               >
-                🎲 Sortear Ganadores
+                Sortear
               </button>
             )}
             
             {raffle.winnerId && (
               <button className={styles.winnersButton}>
-                🏆 Ver Ganadores
+                Ver Ganadores
               </button>
             )}
             

@@ -43,6 +43,7 @@
     &.open {
       transform: translateX(0);
       z-index: 1000;
+      display: none;
     }
   }
 }
@@ -52,7 +53,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 1rem;
-  border-bottom: 1px solid rgba(255, 152, 0, 0.1);
+  border-bottom: 1px solid var(--gray-200);
   min-height: 60px;
 }
 
@@ -335,7 +336,7 @@
   display: none;
   
   @media (max-width: 640px) {
-    display: block;
+    display: none;
   }
 }
 
@@ -405,6 +406,5 @@
 // Focus styles for keyboard navigation
 .toggleButton:focus,
 .menuButton:focus {
-  outline: 2px solid var(--primary);
   outline-offset: 2px;
 }
