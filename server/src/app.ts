@@ -37,7 +37,7 @@ app.use(limiter);
 // More strict rate limiting for auth routes
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: process.env.NODE_ENV === 'development' ? 50 : 5 // More permissive in development
+  max: process.env.NODE_ENV === 'development' ? 80 : 5 // More permissive in development
 });
 
 // Body parsing middleware

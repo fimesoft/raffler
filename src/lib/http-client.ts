@@ -21,6 +21,11 @@ export async function fetchWithAuth(
   try {
     const response = await fetch(url, fetchOptions)
 
+    // Handle 429 Too Many Requests
+    if (response.status === 429) {
+      throw new Error('Demasiadas solicitudes. Por favor espera unos minutos antes de intentar de nuevo.')
+    }
+
     // Handle 401 Unauthorized
     if (response.status === 401 && !skipAuthRedirect) {
       console.warn('401 Unauthorized - Redirecting to login')

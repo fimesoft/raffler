@@ -218,7 +218,7 @@ export default function SalesManagement() {
     <div className={styles.container}>
       <div className={styles.header}>
         <div className={styles.titleSection}>
-          <h1>Gestión de Ventas</h1>
+          <h2>Gestión de Ventas</h2>
           <p className={styles.subtitle}>
             Administra las compras realizadas en tus rifas
           </p>
