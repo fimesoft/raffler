@@ -59,13 +59,14 @@ export default function SalesManagement() {
   }
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('es-CO', {
-      year: 'numeric',
-      month: 'short',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
+    const date = new Date(dateString)
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    const year = date.getFullYear()
+    const hours = String(date.getHours()).padStart(2, '0')
+    const minutes = String(date.getMinutes()).padStart(2, '0')
+
+    return `${day}-${month}-${year}  ${hours}:${minutes}`
   }
 
   const loadSales = async (pageNumber = 1, raffleId = selectedRaffle, buyerEmail = buyerEmailFilter) => {
@@ -223,7 +224,7 @@ export default function SalesManagement() {
           </p>
         </div>
 
-        <div className={styles.statsBar}>
+        {/*<div className={styles.statsBar}>
           <div className={styles.stat}>
             <span className={styles.label}>Total Ventas</span>
             <span className={styles.value}>{totalSales}</span>
@@ -240,7 +241,7 @@ export default function SalesManagement() {
             <span className={styles.label}>Página Actual</span>
             <span className={styles.value}>{page} de {totalPages}</span>
           </div>
-        </div>
+        </div>*/}
       </div>
 
       <div className={styles.filters}>
@@ -350,35 +351,19 @@ export default function SalesManagement() {
                       <div className={styles.raffleInfo}>
                         <div className={styles.raffleTitle}>{sale.raffle.title}</div>
                         <div className={styles.rafflePrice}>
-                          {formatPrice(sale.raffle.ticketPrice)} / boleto
+                          {formatPrice(sale.raffle.ticketPrice)}
                         </div>
                       </div>
                     </td>
                     <td>
                       <div className={styles.numbers}>
-                        {sale.numbers.length <= 8 ? (
-                          <div className={styles.numbersGrid}>
-                            {sale.numbers.map(num => (
-                              <span key={num} className={styles.number}>
-                                {num.toString().padStart(sale.raffle.maxTickets.toString().length, '0')}
-                              </span>
-                            ))}
-                          </div>
-                        ) : (
-                          <div className={styles.numbersCollapsed}>
-                            <div className={styles.numbersPreview}>
-                              {sale.numbers.slice(0, 4).map(num => (
-                                <span key={num} className={styles.number}>
-                                  {num.toString().padStart(sale.raffle.maxTickets.toString().length, '0')}
-                                </span>
-                              ))}
-                            </div>
-                            <span className={styles.moreNumbers}>+{sale.numbers.length - 4} más</span>
-                            <div className={styles.numberRange}>
-                              {Math.min(...sale.numbers)}-{Math.max(...sale.numbers)}
-                            </div>
-                          </div>
-                        )}
+                        <div className={styles.numbersGrid}>
+                          {sale.numbers.map(num => (
+                            <span key={num} className={styles.number}>
+                              {num.toString().padStart(sale.raffle.maxTickets.toString().length, '0')}
+                            </span>
+                          ))}
+                        </div>
                       </div>
                     </td>
                     <td className={styles.ticketCount}>{sale.ticketCount}</td>

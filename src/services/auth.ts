@@ -1,3 +1,5 @@
+import { fetchJSON, FetchOptions } from '@/lib/http-client'
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
 
 export interface RegisterRequest {
@@ -39,75 +41,76 @@ export interface ApiError {
 class AuthService {
   private async makeRequest<T>(
     endpoint: string,
-    options: RequestInit = {}
+    options: FetchOptions = {},
+    skipAuthRedirect: boolean = false
   ): Promise<T> {
     const url = `${API_BASE_URL}/api${endpoint}`
-    
-    const config: RequestInit = {
+
+    const config: FetchOptions = {
       headers: {
         'Content-Type': 'application/json',
         ...options.headers,
       },
       ...options,
+      skipAuthRedirect, // Don't redirect to login on auth endpoints
     }
 
-    try {
-      const response = await fetch(url, config)
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw {
-          status: response.status,
-          ...data,
-        }
-      }
-
-      return data
-    } catch (error) {
-      if (error instanceof Error && error.name === 'TypeError') {
-        // Network error
-        throw {
-          error: 'No se pudo conectar con el servidor. Verifica tu conexión.',
-          status: 0,
-        }
-      }
-      throw error
-    }
+    return fetchJSON<T>(url, config)
   }
 
   async register(userData: RegisterRequest): Promise<AuthResponse> {
-    return this.makeRequest<AuthResponse>('/auth/register', {
-      method: 'POST',
-      body: JSON.stringify(userData),
-    })
+    return this.makeRequest<AuthResponse>(
+      '/auth/register',
+      {
+        method: 'POST',
+        body: JSON.stringify(userData),
+      },
+      true // Skip auth redirect for register
+    )
   }
 
   async login(credentials: LoginRequest): Promise<AuthResponse> {
-    return this.makeRequest<AuthResponse>('/auth/login', {
-      method: 'POST',
-      body: JSON.stringify(credentials),
-    })
+    return this.makeRequest<AuthResponse>(
+      '/auth/login',
+      {
+        method: 'POST',
+        body: JSON.stringify(credentials),
+      },
+      true // Skip auth redirect for login
+    )
   }
 
   async refreshToken(refreshToken: string): Promise<{ accessToken: string }> {
-    return this.makeRequest<{ accessToken: string }>('/auth/refresh', {
-      method: 'POST',
-      body: JSON.stringify({ refreshToken }),
-    })
+    return this.makeRequest<{ accessToken: string }>(
+      '/auth/refresh',
+      {
+        method: 'POST',
+        body: JSON.stringify({ refreshToken }),
+      },
+      true // Skip auth redirect for token refresh
+    )
   }
 
   async forgotPassword(email: string): Promise<{ message: string }> {
-    return this.makeRequest<{ message: string }>('/auth/forgot-password', {
-      method: 'POST',
-      body: JSON.stringify({ email }),
-    })
+    return this.makeRequest<{ message: string }>(
+      '/auth/forgot-password',
+      {
+        method: 'POST',
+        body: JSON.stringify({ email }),
+      },
+      true // Skip auth redirect for password reset
+    )
   }
 
   async resetPassword(token: string, password: string): Promise<{ message: string }> {
-    return this.makeRequest<{ message: string }>('/auth/reset-password', {
-      method: 'POST',
-      body: JSON.stringify({ token, password }),
-    })
+    return this.makeRequest<{ message: string }>(
+      '/auth/reset-password',
+      {
+        method: 'POST',
+        body: JSON.stringify({ token, password }),
+      },
+      true // Skip auth redirect for password reset
+    )
   }
 
   // Token management

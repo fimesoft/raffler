@@ -308,7 +308,7 @@ export default function Dashboard() {
       
       <div className={`${styles.container} ${sidebarOpen ? styles.sidebarOpen : styles.sidebarClosed}`}>
         {/* Solo mostrar el header con estadísticas en overview, manage y sales */}
-        {activeTab !== 'create' && activeTab !== 'browse' && (
+        {activeTab !== 'create' && activeTab !== 'browse' && activeTab !== 'manage' && activeTab !== 'sales' && (
           <header className={styles.header}>
             <div className={styles.headerCards}>
               <div className={styles.headerCard}>
@@ -414,7 +414,7 @@ export default function Dashboard() {
                         <line x1="5" y1="12" x2="19" y2="12"/>
                       </svg>
                     </span>
-                    Crear Nueva Rifa ---
+                    Crear Nueva Rifa
                   </button>
                   <button 
                     className={styles.secondaryButton}
