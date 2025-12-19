@@ -14,16 +14,35 @@ import raffleRoutes from './routes/raffles';
 import { setupSwagger } from './config/swagger';
 
 // Load environment variables
-dotenv.config({ path: '/Users/diegoquintero/raffler/.env.local' });
+// En producción, las variables estarán en el entorno del servidor
+if (process.env.NODE_ENV !== 'production') {
+  dotenv.config({ path: '.env.local' });
+}
 
 const app = express();
 
 // Security middleware
 app.use(helmet());
+
+// CORS configuration - Permitir el dominio de Vercel en producción
+const allowedOrigins = process.env.NODE_ENV === 'production'
+  ? [
+      process.env.FRONTEND_URL || 'https://your-app.vercel.app',
+      // Agregar más dominios si es necesario
+    ]
+  : ['http://localhost:3000', 'http://localhost:3001'];
+
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? 'https://yourproductiondomain.com' 
-    : 'http://localhost:3000',
+  origin: (origin, callback) => {
+    // Permitir requests sin origin (como mobile apps o curl)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.some(allowed => origin.startsWith(allowed.replace('*', '')))) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 

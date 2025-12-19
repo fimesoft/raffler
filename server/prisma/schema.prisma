@@ -1,0 +1,147 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                Int      @id @default(autoincrement())
+  email             String   @unique
+  password          String?
+  name              String?
+  image             String?
+  emailVerified     DateTime?
+  isActive          Boolean  @default(true)
+  
+  // Identificación oficial
+  documentType      DocumentType? // DNI, CC, Pasaporte, etc.
+  documentNumber    String?       @unique // Número del documento
+  phone             String?       // Teléfono de contacto
+  dateOfBirth       DateTime?     // Fecha de nacimiento
+  address           String?       // Dirección
+  city              String?       // Ciudad
+  country           String?       // País
+  
+  // Verificación
+  documentVerified  Boolean  @default(false) // Si el documento fue verificado
+  phoneVerified     Boolean  @default(false) // Si el teléfono fue verificado
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Password reset
+  resetToken        String?
+  resetTokenExpires DateTime?
+  
+  // OAuth accounts
+  accounts          Account[]
+  sessions          Session[]
+  
+  // Raffles y tickets
+  raffles           Raffle[]
+  tickets           Ticket[]
+  
+  @@map("users")
+}
+
+enum DocumentType {
+  DNI      // Documento Nacional de Identidad
+  CC       // Cédula de Ciudadanía  
+  CE       // Cédula de Extranjería
+  PASSPORT // Pasaporte
+  NIT      // Para empresas
+}
+
+model Account {
+  id                Int     @id @default(autoincrement())
+  userId            Int
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           Int      @id @default(autoincrement())
+  sessionToken String   @unique
+  userId       Int
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model Raffle {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  prize       String
+  image       String?
+  ticketPrice Float
+  maxTickets  Int
+  soldTickets Int      @default(0)
+  endDate     DateTime
+  isActive    Boolean  @default(true)
+  winnerId    Int?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  tickets     Ticket[]
+  
+  @@map("raffles")
+}
+
+model Ticket {
+  id           Int      @id @default(autoincrement())
+  number       Int      // Número del boleto (1, 2, 3, etc.)
+  raffleId     Int
+  raffle       Raffle   @relation(fields: [raffleId], references: [id], onDelete: Cascade)
+  buyerId      Int   // ID del cliente que compró el boleto
+  buyer        User     @relation(fields: [buyerId], references: [id])
+  status       TicketStatus @default(SOLD)
+  
+  // Información adicional del comprador
+  buyerDocument String   // DNI/CC del comprador para verificación
+  buyerPhone    String?  // Teléfono del comprador
+  
+  purchaseDate DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  @@unique([raffleId, number]) // Un número por rifa
+  @@map("tickets")
+}
+
+enum TicketStatus {
+  SOLD     // Boleto vendido
+  RESERVED // Boleto reservado temporalmente
+  WINNER   // Boleto ganador
+  REFUNDED // Boleto reembolsado
+}
+
