@@ -178,9 +178,14 @@ export const getAllRaffles = async (req: Request, res: Response) => {
 export const getRaffleById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    const raffleId = parseInt(id, 10);
+
+    if (isNaN(raffleId)) {
+      return res.status(400).json({ error: 'Invalid raffle ID' });
+    }
 
     const raffle = await prisma.raffle.findUnique({
-      where: { id },
+      where: { id: raffleId },
       select: {
         id: true,
         title: true,
@@ -289,12 +294,17 @@ export const getUserRaffles = async (req: Request, res: Response) => {
 export const updateRaffle = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    const raffleId = parseInt(id, 10);
     const userId = req.user!.id;
-    
+
+    if (isNaN(raffleId)) {
+      return res.status(400).json({ error: 'Invalid raffle ID' });
+    }
+
     // Check if raffle exists and belongs to user
     const existingRaffle = await prisma.raffle.findFirst({
       where: {
-        id,
+        id: raffleId,
         userId
       }
     });
@@ -311,7 +321,7 @@ export const updateRaffle = async (req: Request, res: Response) => {
     const { title, description, prize, ticketPrice, maxTickets, endDate, image } = req.body;
 
     const raffle = await prisma.raffle.update({
-      where: { id },
+      where: { id: raffleId },
       data: {
         ...(title && { title }),
         ...(description && { description }),
@@ -352,12 +362,17 @@ export const updateRaffle = async (req: Request, res: Response) => {
 export const deleteRaffle = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    const raffleId = parseInt(id, 10);
     const userId = req.user!.id;
+
+    if (isNaN(raffleId)) {
+      return res.status(400).json({ error: 'Invalid raffle ID' });
+    }
 
     // Check if raffle exists and belongs to user
     const existingRaffle = await prisma.raffle.findFirst({
       where: {
-        id,
+        id: raffleId,
         userId
       }
     });
@@ -372,7 +387,7 @@ export const deleteRaffle = async (req: Request, res: Response) => {
     }
 
     await prisma.raffle.delete({
-      where: { id }
+      where: { id: raffleId }
     });
 
     res.json({ message: 'Raffle deleted successfully' });
