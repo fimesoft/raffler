@@ -9,6 +9,7 @@ import DashboardSidebar from './DashboardSidebar'
 import SalesManagement from './SalesManagement'
 import { CircularProgress } from '../shared'
 import styles from './scss/Dashboard.module.scss'
+import { API_CONFIG } from '@/config/api'
 
 // Iconos SVG Vintage
 const VintageMoneyIcon = () => (
@@ -136,7 +137,7 @@ export default function Dashboard() {
         setLoadingStatus(true)
         setStatusError(null)
         
-        const response = await fetch('/api/raffle/status')
+        const response = await fetch(`${API_CONFIG.baseURL}/api/raffle/status`)
         
         if (!response.ok) {
           throw new Error('Failed to fetch raffle status')
