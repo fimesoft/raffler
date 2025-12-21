@@ -2,7 +2,8 @@
 
 import { fetchWithAuth } from '@/lib/http-client'
 
-const API_BASE_URL = 'http://localhost:5001/api';
+import { API_CONFIG } from '@/config/api'
+
 
 export interface Raffle {
   id: string;
@@ -83,7 +84,7 @@ export const raffleService = {
     if (params?.sortBy) queryParams.append('sortBy', params.sortBy);
     if (params?.sortOrder) queryParams.append('sortOrder', params.sortOrder);
 
-    const url = `${API_BASE_URL}/raffles?${queryParams}`;
+    const url = `${API_CONFIG}/raffles?${queryParams}`;
 
     const response = await fetchWithAuth(url, {
       method: 'GET',
@@ -110,7 +111,7 @@ export const raffleService = {
 
   // Obtener rifa por ID
   async getRaffleById(id: string): Promise<{ raffle: RaffleDetail }> {
-    const response = await fetchWithAuth(`${API_BASE_URL}/raffles/${id}`, {
+    const response = await fetchWithAuth(`${API_CONFIG}/raffles/${id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
@@ -130,7 +131,7 @@ export const raffleService = {
 
     console.log(JSON.stringify(data));
     
-    const response = await fetchWithAuth(`${API_BASE_URL}/raffles`, {
+    const response = await fetchWithAuth(`${API_CONFIG}/raffles`, {
       method: 'POST',
       headers,
       body: JSON.stringify(data)
@@ -155,7 +156,7 @@ export const raffleService = {
     if (params?.page) queryParams.append('page', params.page.toString());
     if (params?.limit) queryParams.append('limit', params.limit.toString());
 
-    const response = await fetchWithAuth(`${API_BASE_URL}/raffles/my?${queryParams}`, {
+    const response = await fetchWithAuth(`${API_CONFIG}/raffles/my?${queryParams}`, {
       method: 'GET',
       headers
     });
@@ -171,7 +172,7 @@ export const raffleService = {
   async updateRaffle(id: string, data: Partial<CreateRaffleData>, token: string): Promise<{ message: string; raffle: Raffle }> {
     const headers = getAuthHeaders(token);
     
-    const response = await fetchWithAuth(`${API_BASE_URL}/raffles/${id}`, {
+    const response = await fetchWithAuth(`${API_CONFIG}/raffles/${id}`, {
       method: 'PUT',
       headers,
       body: JSON.stringify(data)
@@ -189,7 +190,7 @@ export const raffleService = {
   async deleteRaffle(id: string, token: string): Promise<{ message: string }> {
     const headers = getAuthHeaders(token);
     
-    const response = await fetchWithAuth(`${API_BASE_URL}/raffles/${id}`, {
+    const response = await fetchWithAuth(`${API_CONFIG}/raffles/${id}`, {
       method: 'DELETE',
       headers
     });
@@ -217,7 +218,7 @@ export const raffleService = {
   }> {
     const headers = getAuthHeaders(token);
 
-    const response = await fetchWithAuth(`${API_BASE_URL}/raffles/${raffleId}/purchase`, {
+    const response = await fetchWithAuth(`${API_CONFIG}/raffles/${raffleId}/purchase`, {
       method: 'POST',
       headers,
       body: JSON.stringify({
@@ -245,7 +246,7 @@ export const raffleService = {
     maxTickets: number;
     available: number;
   }> {
-    const response = await fetchWithAuth(`${API_BASE_URL}/raffles/${raffleId}/tickets`, {
+    const response = await fetchWithAuth(`${API_CONFIG}/raffles/${raffleId}/tickets`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
@@ -305,7 +306,7 @@ export const raffleService = {
     if (params?.limit) queryParams.append('limit', params.limit.toString());
     if (params?.buyerEmail) queryParams.append('buyerEmail', params.buyerEmail);
 
-    const response = await fetchWithAuth(`${API_BASE_URL}/raffles/my/sales?${queryParams}`, {
+    const response = await fetchWithAuth(`${API_CONFIG}/raffles/my/sales?${queryParams}`, {
       method: 'GET',
       headers
     });
@@ -341,7 +342,7 @@ export const raffleService = {
   }> {
     const headers = getAuthHeaders(token);
 
-    const response = await fetchWithAuth(`${API_BASE_URL}/raffles/${raffleId}/draw-winners`, {
+    const response = await fetchWithAuth(`${API_CONFIG}/raffles/${raffleId}/draw-winners`, {
       method: 'POST',
       headers
     });
@@ -375,7 +376,7 @@ export const raffleService = {
   }> {
     const headers = getAuthHeaders(token);
 
-    const response = await fetchWithAuth(`${API_BASE_URL}/raffles/${raffleId}/draw-results`, {
+    const response = await fetchWithAuth(`${API_CONFIG}/raffles/${raffleId}/draw-results`, {
       method: 'GET',
       headers
     });
@@ -395,7 +396,7 @@ export const raffleService = {
   }> {
     const headers = getAuthHeaders(token);
 
-    const response = await fetchWithAuth(`${API_BASE_URL}/raffles/${raffleId}/confirm-payment/${buyerId}`, {
+    const response = await fetchWithAuth(`${API_CONFIG}/raffles/${raffleId}/confirm-payment/${buyerId}`, {
       method: 'PATCH',
       headers
     });
