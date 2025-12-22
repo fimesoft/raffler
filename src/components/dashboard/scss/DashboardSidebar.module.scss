@@ -286,44 +286,6 @@
   opacity: 0.8;
 }
 
-.sidebarFooter {
-  padding: 1rem;
-  border-top: 1px solid rgba(255, 152, 0, 0.1);
-  margin-top: auto;
-}
-
-.footerContent {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.footerText {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.25rem;
-  opacity: 1;
-  transition: opacity 0.2s ease-in-out;
-
-  .sidebar.closed & {
-    opacity: 0;
-    pointer-events: none;
-  }
-
-  span:first-child {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--primary);
-  }
-}
-
-.version {
-  font-size: 0.75rem;
-  color: var(--gray-700);
-  opacity: 0.7;
-}
-
 // Overlay for mobile
 .overlay {
   position: fixed;

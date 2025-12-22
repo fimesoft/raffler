@@ -95,10 +95,10 @@ export default function CreateRaffleForm({ onRaffleCreated }: CreateRaffleFormPr
     mode: 'onChange', // Valida mientras el usuario escribe
     reValidateMode: 'onChange', // Re-valida en cada cambio
     defaultValues: {
-      title: 'Moto MT09 2025 900km',
+      /*title: 'Moto MT09 2025 900km',
       description: 'Se rifa Moto MT09 2025 900km como nueva',
       prize: 'Moto MT09',
-      ticketPrice: 3000,
+      ticketPrice: 3000,*/
       maxTickets: 100,
       endDate: defaultEndDate,
     }
@@ -362,7 +362,7 @@ export default function CreateRaffleForm({ onRaffleCreated }: CreateRaffleFormPr
           disabled={isSubmitting || !isValid}
           className={styles.primaryButton}
         >
-          {isSubmitting ? 'Creando...' : !isValid ? 'Completar campos requeridos' : 'Crear Rifa'}
+          {isSubmitting ? 'Creando...' : !isValid ? 'Completar campos' : 'Crear Rifa'}
         </button>
       </div>
     </form>

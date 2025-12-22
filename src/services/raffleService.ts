@@ -1,9 +1,5 @@
-// We'll get session in components instead of here
-
 import { fetchWithAuth } from '@/lib/http-client'
-
 import { API_CONFIG } from '@/config/api'
-
 
 export interface Raffle {
   id: string;
@@ -96,7 +92,7 @@ export const raffleService = {
     });
 
     if (!response.ok) {
-      throw new Error(`Error al obtener las rifas: ${response.status} ${response.statusText}`);
+      throw new Error(`Error al obtener las rifas--: ${response.status} ${response.statusText}`);
     }
 
     const data = await response.json();

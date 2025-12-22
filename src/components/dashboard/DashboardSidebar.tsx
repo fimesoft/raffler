@@ -170,17 +170,6 @@ export default function DashboardSidebar({ activeTab, onTabChange, onSidebarTogg
           ))}
         </ul>
       </nav>
-
-      <div className={styles.sidebarFooter}>
-        <div className={styles.footerContent}>
-          {isOpen && (
-            <div className={styles.footerText}>
-              <span>Raffler</span>
-              <span className={styles.version}>v1.0</span>
-            </div>
-          )}
-        </div>
-      </div>
     </aside>
     </>
   )
