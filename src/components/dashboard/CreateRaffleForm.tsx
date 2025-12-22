@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import imageCompression from 'browser-image-compression'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -9,6 +9,21 @@ import { raffleService } from '../../services/raffleService'
 import { useAuth } from '../../contexts/AuthContext'
 import authService from '../../services/auth'
 import styles from './scss/CreateRaffleForm.module.scss'
+
+// Helper: Calcular fecha mínima (hoy)
+const getMinEndDate = () => {
+  return new Date()
+}
+
+// Helper: Formatear fecha para input datetime-local
+const formatDateTimeLocal = (date: Date) => {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+  return `${year}-${month}-${day}T${hours}:${minutes}`
+}
 
 const raffleSchema = z.object({
   title: z.string()
@@ -37,7 +52,15 @@ const raffleSchema = z.object({
     ),
   ticketPrice: z.number().min(0.01, 'El precio debe ser mayor a 0'),
   maxTickets: z.number().min(1, 'Debe haber al menos 1 boleto'),
-  endDate: z.string().min(1, 'Selecciona una fecha de finalización'),
+  endDate: z.string()
+    .min(1, 'Selecciona una fecha de finalización')
+    .refine((date) => {
+      const selectedDate = new Date(date)
+      const now = new Date()
+      return selectedDate >= now
+    }, {
+      message: 'Fecha invalida'
+    }),
   image: z.any().optional()
 })
 
@@ -52,6 +75,15 @@ export default function CreateRaffleForm({ onRaffleCreated }: CreateRaffleFormPr
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
+
+  // Calcular fecha mínima (hoy) - useMemo para evitar recalcular
+  const minEndDate = useMemo(() => formatDateTimeLocal(getMinEndDate()), [])
+  const defaultEndDate = useMemo(() => {
+    const date = new Date()
+    date.setDate(date.getDate() + 7) // 1 semana desde hoy por defecto
+    date.setHours(21, 0, 0, 0) // 9 PM por defecto
+    return formatDateTimeLocal(date)
+  }, [])
 
   const {
     register,
@@ -68,7 +100,7 @@ export default function CreateRaffleForm({ onRaffleCreated }: CreateRaffleFormPr
       prize: 'Moto MT09',
       ticketPrice: 3000,
       maxTickets: 100,
-      endDate: '2025-09-05T21:00',
+      endDate: defaultEndDate,
     }
   })
 
@@ -272,6 +304,7 @@ export default function CreateRaffleForm({ onRaffleCreated }: CreateRaffleFormPr
           <input
             id="endDate"
             type="datetime-local"
+            min={minEndDate}
             {...register('endDate')}
             className={errors.endDate ? styles.error : ''}
           />
