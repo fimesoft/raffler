@@ -1,6 +1,5 @@
 import { fetchJSON, FetchOptions } from '@/lib/http-client'
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+import { API_CONFIG } from '@/config/api'
 
 export interface RegisterRequest {
   name: string
@@ -44,7 +43,7 @@ class AuthService {
     options: FetchOptions = {},
     skipAuthRedirect: boolean = false
   ): Promise<T> {
-    const url = `${API_BASE_URL}/api${endpoint}`
+    const url = `${API_CONFIG.baseURL}/api${endpoint}`
 
     const config: FetchOptions = {
       headers: {
