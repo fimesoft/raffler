@@ -15,7 +15,7 @@ interface RaffleCardProps {
 }
 
 export default function RaffleCard({ raffle, showActions = false, onDeleted, onPurchaseClick }: RaffleCardProps) {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, user } = useAuth()
   const [isDeleting, setIsDeleting] = useState(false)
   const [showDrawer, setShowDrawer] = useState(false)
 
@@ -89,9 +89,10 @@ export default function RaffleCard({ raffle, showActions = false, onDeleted, onP
   const progressPercentage = Math.round((raffle.soldTickets / raffle.maxTickets) * 100)
   const timeRemaining = getTimeRemaining(raffle.endDate)
   const isExpired = timeRemaining === 'Finalizada'
+  const isOwnRaffle = user?.id === raffle.creator?.id
 
   return (
-    
+
     <div className={`${styles.card} ${isExpired ? styles.expired : ''}`}>
       {raffle.image && (
         <div className={styles.imageContainer}>
@@ -159,9 +160,10 @@ export default function RaffleCard({ raffle, showActions = false, onDeleted, onP
             </button>
             
             {raffle.soldTickets >= 3 && !raffle.winnerId && (
-              <button 
+              <button
                 className={styles.drawButton}
                 onClick={() => setShowDrawer(true)}
+                disabled={!isExpired}
               >
                 Sortear
               </button>
@@ -192,9 +194,10 @@ export default function RaffleCard({ raffle, showActions = false, onDeleted, onP
 
         {!showActions && !isExpired && (
           <div className={styles.actions}>
-            <button 
+            <button
               className={styles.buyButton}
               onClick={() => onPurchaseClick?.(raffle)}
+              disabled={isOwnRaffle}
             >
               Comprar Boletos
             </button>
