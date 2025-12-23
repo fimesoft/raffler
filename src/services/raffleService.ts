@@ -14,7 +14,7 @@ export interface Raffle {
   createdAt: string;
   isActive?: boolean;
   winnerId?: string | null;
-  user: {
+  creator: {
     id: string;
     name: string;
     email?: string;

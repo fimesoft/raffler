@@ -91,7 +91,7 @@ export default function LoginModal({ onClose }: LoginModalProps) {
         newErrors.phone = 'Ingresa un número de teléfono válido'
       }
 
-      if (!formData.dateOfBirth) {
+      /*if (!formData.dateOfBirth) {
         newErrors.dateOfBirth = 'La fecha de nacimiento es requerida'
       } else {
         const birthDate = new Date(formData.dateOfBirth)
@@ -100,7 +100,7 @@ export default function LoginModal({ onClose }: LoginModalProps) {
         if (age < 18) {
           newErrors.dateOfBirth = 'Debes ser mayor de edad para participar'
         }
-      }
+      }*/
 
       if (!formData.password) {
         newErrors.password = 'La contraseña es requerida'
@@ -573,7 +573,7 @@ export default function LoginModal({ onClose }: LoginModalProps) {
             type="tel"
             value={formData.phone}
             onChange={handleInputChange('phone')}
-            placeholder="+57 300 123 4567"
+            placeholder="+54"
             className={`${styles.input} ${errors.phone ? styles.inputError : ''}`}
             disabled={isLoading}
           />
@@ -582,7 +582,7 @@ export default function LoginModal({ onClose }: LoginModalProps) {
           )}
         </div>
 
-        <div className={styles.inputGroup}>
+        {/*<div className={styles.inputGroup}>
           <label htmlFor="date-of-birth" className={styles.label}>
             Fecha de nacimiento *
           </label>
@@ -598,11 +598,11 @@ export default function LoginModal({ onClose }: LoginModalProps) {
           {errors.dateOfBirth && (
             <span className={styles.errorMessage}>{errors.dateOfBirth}</span>
           )}
-        </div>
+        </div> */}
 
         <button
           type="submit"
-          disabled={isLoading || !formData.name || !formData.email || !formData.password || !formData.confirmPassword || !formData.documentNumber || !formData.phone || !formData.dateOfBirth}
+          disabled={isLoading || !formData.name || !formData.email || !formData.password || !formData.confirmPassword || !formData.documentNumber || !formData.phone}
           className={styles.primaryButton}
         >
           {isLoading ? (

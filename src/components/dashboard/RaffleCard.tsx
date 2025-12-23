@@ -91,6 +91,7 @@ export default function RaffleCard({ raffle, showActions = false, onDeleted, onP
   const isExpired = timeRemaining === 'Finalizada'
 
   return (
+    
     <div className={`${styles.card} ${isExpired ? styles.expired : ''}`}>
       {raffle.image && (
         <div className={styles.imageContainer}>
@@ -122,7 +123,7 @@ export default function RaffleCard({ raffle, showActions = false, onDeleted, onP
               <path d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z" stroke="#F2771A" strokeWidth="1.5" fill="none"/>
               <path d="M12 14C7.58172 14 4 17.5817 4 22H20C20 17.5817 16.4183 14 12 14Z" stroke="#F2771A" strokeWidth="1.5" fill="none"/>
             </svg>
-            <span className={styles.value}>{raffle.user?.name}</span>
+            <span className={styles.value}>{raffle.creator?.name}</span>
           </div>
 
         </div>

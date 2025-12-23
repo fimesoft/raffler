@@ -42,14 +42,6 @@ const raffleSchema = z.object({
         .max(2000, 'La descripción no puede exceder 2000 caracteres')
         .regex(/^[a-zA-Z0-9\sáéíóúüñÁÉÍÓÚÜÑ'`´+ç.-;.?¿()/%&$·"*]+$/, 'La descripción solo puede contener letras, números y caracteres permitidos')
     ),
-  prize: z.string()
-    .transform((str) => str.trim()) // Elimina espacios al principio y final
-    .pipe(
-      z.string()
-        .min(3, 'Describe el premio')
-        .max(200, 'La descripción del premio no puede exceder 200 caracteres')
-        .regex(/^[a-zA-Z0-9\sáéíóúüñÁÉÍÓÚÜÑ'`´+ç.-;.?¿()/%&$·"*]+$/, 'El premio solo puede contener letras, números y caracteres permitidos')
-    ),
   ticketPrice: z.number().min(0.01, 'El precio debe ser mayor a 0'),
   maxTickets: z.number().min(1, 'Debe haber al menos 1 boleto'),
   endDate: z.string()
@@ -95,10 +87,6 @@ export default function CreateRaffleForm({ onRaffleCreated }: CreateRaffleFormPr
     mode: 'onChange', // Valida mientras el usuario escribe
     reValidateMode: 'onChange', // Re-valida en cada cambio
     defaultValues: {
-      /*title: 'Moto MT09 2025 900km',
-      description: 'Se rifa Moto MT09 2025 900km como nueva',
-      prize: 'Moto MT09',
-      ticketPrice: 3000,*/
       maxTickets: 100,
       endDate: defaultEndDate,
     }

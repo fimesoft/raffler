@@ -130,7 +130,7 @@ export default function RafflePublicCard({ raffle, onClick }: RafflePublicCardPr
           
           <div className={styles.stat}>
             <span className={styles.statLabel}>Organizador</span>
-            <span className={styles.statValue}>{raffle.user?.name}</span>
+            <span className={styles.statValue}>{raffle.creator?.name}</span>
           </div>
         </div>
 
