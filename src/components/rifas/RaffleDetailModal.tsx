@@ -178,7 +178,7 @@ export default function RaffleDetailModal({ raffle, onClose, onTicketPurchased }
                   </div>
                   <div className={styles.stat}>
                     <span className={styles.label}>Organizada por</span>
-                    <span className={styles.value}>{raffle.user?.name}</span>
+                    <span className={styles.value}>{raffle.creator?.name}</span>
                   </div>
                 </div>
               </div>
