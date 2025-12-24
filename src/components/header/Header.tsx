@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
 import AvatarDropdown from '@/components/ui/AvatarDropdown'
+import Logo from './Logo'
 import styles from './scss/Header.module.scss'
 
 export default function Header() {
@@ -59,10 +60,9 @@ export default function Header() {
         <div className={styles.nav}>
           <div className={styles.logo}>
             <Link href="/">
-              Rifala
+              <Logo />
             </Link>
           </div>
-
           <nav className={styles.desktopNav}>
             <div className={styles.navLinks}>
               {!isAuthenticated && (

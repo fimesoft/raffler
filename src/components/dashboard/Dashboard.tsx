@@ -10,6 +10,7 @@ import SalesManagement from './SalesManagement'
 import { CircularProgress } from '../shared'
 import styles from './scss/Dashboard.module.scss'
 import { API_CONFIG } from '@/config/api'
+import authService from '@/services/auth'
 
 // Iconos SVG Vintage
 const VintageMoneyIcon = () => (
@@ -111,13 +112,13 @@ export default function Dashboard() {
   
   // Combine data from different APIs or use defaults
   const stats: RaffleStats = {
-    totalRaffles: userStats?.totalRaffles || (raffleStatus ? raffleStatus.activeRaffles + raffleStatus.expiredRaffles : 3),
-    activeRaffles: userStats?.activeRaffles || raffleStatus?.activeRaffles || 2,
-    expiredRaffles: userStats?.expiredRaffles || raffleStatus?.expiredRaffles || 1,
-    totalTicketsSold: userStats?.totalTicketsSold || 45,
-    totalRevenue: userStats?.totalRevenue || 450000,
-    averageTicketPrice: userStats?.averageTicketPrice || 10000,
-    conversionRate: userStats?.conversionRate || 75
+    totalRaffles: userStats?.totalRaffles ||  0,
+    activeRaffles: userStats?.activeRaffles || 0,
+    expiredRaffles: userStats?.expiredRaffles || 0,
+    totalTicketsSold: userStats?.totalTicketsSold || 0,
+    totalRevenue: userStats?.totalRevenue || 0,
+    averageTicketPrice: userStats?.averageTicketPrice || 0,
+    conversionRate: userStats?.conversionRate || 0
   }
   
   const loading = false
@@ -131,7 +132,7 @@ export default function Dashboard() {
   }, [searchParams])
 
   // Fetch raffle status from API
-  useEffect(() => {
+  /*useEffect(() => {
     const fetchRaffleStatus = async () => {
       try {
         setLoadingStatus(true)
@@ -154,26 +155,31 @@ export default function Dashboard() {
     }
 
     fetchRaffleStatus()
-  }, [])
+  }, [])*/
 
   // Fetch user's raffle stats from API
   useEffect(() => {
     const fetchUserStats = async () => {
-      if (!session?.user) {
-        setLoadingUserStats(false)
-        return
-      }
-
       try {
         setLoadingUserStats(true)
         setUserStatsError(null)
-        
-        const response = await fetch('/api/raffle/my/stats')
-        
+
+        const token = authService.getAccessToken()
+        if (!token) {
+          throw new Error('No authentication token found')
+        }
+
+        const response = await fetch(`${API_CONFIG.baseURL}/api/raffles/my/stats`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        })
+
         if (!response.ok) {
           throw new Error('Failed to fetch user raffle stats')
         }
-        
+
         const data: UserRaffleStatsResponse = await response.json()
         setUserStats(data)
       } catch (error) {
@@ -186,14 +192,6 @@ export default function Dashboard() {
 
     fetchUserStats()
   }, [session])
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('es-CO', {
-      style: 'currency',
-      currency: 'COP',
-      minimumFractionDigits: 0
-    }).format(amount)
-  }
 
   const renderCharts = () => {
     if (loading) {
@@ -235,7 +233,7 @@ export default function Dashboard() {
                   <VintageMoneyIcon />
                 </div>
                 <div className={styles.revenueInfo}>
-                  <div className={styles.revenueValue}>{formatCurrency(stats.totalRevenue)}</div>
+                  <div className={styles.revenueValue}>{(stats.totalRevenue)}</div>
                   <div className={styles.revenueLabel}>Ingresos Totales</div>
                 </div>
               </div>
@@ -253,7 +251,7 @@ export default function Dashboard() {
                   <VintageChartIcon />
                 </div>
                 <div className={styles.revenueInfo}>
-                  <div className={styles.revenueValue}>{formatCurrency(stats.averageTicketPrice)}</div>
+                  <div className={styles.revenueValue}>{(stats.averageTicketPrice)}</div>
                   <div className={styles.revenueLabel}>Precio Promedio</div>
                 </div>
               </div>
@@ -318,20 +316,9 @@ export default function Dashboard() {
                   <p>Hola, {session?.user?.name || 'Usuario'}</p>
                 </div>
               </div>
-              
               <div className={styles.headerCard}>
                 <div className={styles.cardContent}>
                   <h3 className={styles.chartTitle}>Estado de las Rifas</h3>
-                  {loadingStatus ? (
-                    <div className={styles.loading}>
-                      <div className={styles.spinner}></div>
-                      <p>Cargando...</p>
-                    </div>
-                  ) : statusError ? (
-                    <div className={styles.noData}>
-                      <p>{statusError}</p>
-                    </div>
-                  ) : (
                     <div className={styles.statusContainer}>
                       <div className={styles.statusChart}>
                         <CircularProgress 
@@ -354,7 +341,6 @@ export default function Dashboard() {
                         </div>
                       </div>
                     </div>
-                  )}
                 </div>
               </div>
               
@@ -387,7 +373,7 @@ export default function Dashboard() {
                         </div>
                         <div className={styles.statusItem}>
                           <div className={styles.statusDot} style={{ backgroundColor: '#3b82f6' }}></div>
-                          <span>Ingresos: {formatCurrency(stats.totalRevenue)}</span>
+                          <span>Ingresos: {(stats.totalRevenue)}</span>
                         </div>
                       </div>
                     </div>
