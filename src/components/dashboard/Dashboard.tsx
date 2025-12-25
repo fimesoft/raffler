@@ -7,7 +7,7 @@ import CreateRaffleForm from './CreateRaffleForm'
 import RaffleGrid from './RaffleGrid'
 import DashboardSidebar from './DashboardSidebar'
 import SalesManagement from './SalesManagement'
-import { CircularProgress } from '../shared'
+import { CircularProgress, CircularArrowButton } from '../shared'
 import styles from './scss/Dashboard.module.scss'
 import { API_CONFIG } from '@/config/api'
 import authService from '@/services/auth'
@@ -92,10 +92,10 @@ interface UserRaffleStatsResponse {
   activeRaffles: number
   expiredRaffles: number
   totalTicketsSold: number
+  totalTicketsInActiveRaffles: number
   totalRevenue: number
   averageTicketPrice: number
   conversionRate: number
-  raffles: any[]
 }
 
 export default function Dashboard() {
@@ -106,20 +106,12 @@ export default function Dashboard() {
   const [raffleStatus, setRaffleStatus] = useState<RaffleStatusResponse | null>(null)
   const [loadingStatus, setLoadingStatus] = useState(true)
   const [statusError, setStatusError] = useState<string | null>(null)
-  const [userStats, setUserStats] = useState<UserRaffleStatsResponse | null>(null)
+  const [userStats, setUserStats] = useState<UserRaffleStatsResponse>()
   const [loadingUserStats, setLoadingUserStats] = useState(true)
   const [userStatsError, setUserStatsError] = useState<string | null>(null)
   
   // Combine data from different APIs or use defaults
-  const stats: RaffleStats = {
-    totalRaffles: userStats?.totalRaffles ||  0,
-    activeRaffles: userStats?.activeRaffles || 0,
-    expiredRaffles: userStats?.expiredRaffles || 0,
-    totalTicketsSold: userStats?.totalTicketsSold || 0,
-    totalRevenue: userStats?.totalRevenue || 0,
-    averageTicketPrice: userStats?.averageTicketPrice || 0,
-    conversionRate: userStats?.conversionRate || 0
-  }
+
   
   const loading = false
 
@@ -211,15 +203,15 @@ export default function Dashboard() {
           <div className={styles.chartCard}>
             <h3 className={styles.chartTitle}>Rendimiento de Ventas</h3>
             <div className={styles.performanceContainer}>
-              <CircularProgress 
-                percentage={stats.conversionRate} 
-                size={130} 
+              <CircularProgress
+                percentage={userStats?.conversionRate ?? 0}
+                size={85}
                 color="#F2771A"
               />
               <div className={styles.performanceStats}>
                 <div className={styles.performanceStat}>
                   <span className={styles.performanceLabel}>Tasa de Conversión</span>
-                  <span className={styles.performanceValue}>{stats.conversionRate}%</span>
+                  <span className={styles.performanceValue}>{userStats?.conversionRate ?? 0}%</span>
                 </div>
               </div>
             </div>
@@ -233,7 +225,7 @@ export default function Dashboard() {
                   <VintageMoneyIcon />
                 </div>
                 <div className={styles.revenueInfo}>
-                  <div className={styles.revenueValue}>{(stats.totalRevenue)}</div>
+                  <div className={styles.revenueValue}>{userStats?.totalRevenue ?? 0}</div>
                   <div className={styles.revenueLabel}>Ingresos Totales</div>
                 </div>
               </div>
@@ -242,7 +234,7 @@ export default function Dashboard() {
                   <VintageTicketIcon />
                 </div>
                 <div className={styles.revenueInfo}>
-                  <div className={styles.revenueValue}>{stats.totalTicketsSold}</div>
+                  <div className={styles.revenueValue}>{userStats?.totalTicketsSold ?? 0}</div>
                   <div className={styles.revenueLabel}>Boletos Vendidos</div>
                 </div>
               </div>
@@ -251,7 +243,7 @@ export default function Dashboard() {
                   <VintageChartIcon />
                 </div>
                 <div className={styles.revenueInfo}>
-                  <div className={styles.revenueValue}>{(stats.averageTicketPrice)}</div>
+                  <div className={styles.revenueValue}>{userStats?.averageTicketPrice ?? 0}</div>
                   <div className={styles.revenueLabel}>Precio Promedio</div>
                 </div>
               </div>
@@ -266,28 +258,28 @@ export default function Dashboard() {
                 <div className={styles.metricIcon}>
                   <VintageTrophyIcon />
                 </div>
-                <div className={styles.metricValue}>{stats.totalRaffles}</div>
+                <div className={styles.metricValue}>{userStats?.totalRaffles ?? 0}</div>
                 <div className={styles.metricLabel}>Total Rifas</div>
               </div>
               <div className={styles.metric}>
                 <div className={styles.metricIcon}>
                   <VintageActiveIcon />
                 </div>
-                <div className={styles.metricValue}>{stats.activeRaffles}</div>
+                <div className={styles.metricValue}>{userStats?.activeRaffles ?? 0}</div>
                 <div className={styles.metricLabel}>Activas</div>
               </div>
               <div className={styles.metric}>
                 <div className={styles.metricIcon}>
                   <VintageClockIcon />
                 </div>
-                <div className={styles.metricValue}>{stats.expiredRaffles}</div>
+                <div className={styles.metricValue}>{userStats?.expiredRaffles ?? 0}</div>
                 <div className={styles.metricLabel}>Finalizadas</div>
               </div>
               <div className={styles.metric}>
                 <div className={styles.metricIcon}>
                   <VintageTrendIcon />
                 </div>
-                <div className={styles.metricValue}>{stats.conversionRate}%</div>
+                <div className={styles.metricValue}>{userStats?.conversionRate ?? 0}%</div>
                 <div className={styles.metricLabel}>Conversión</div>
               </div>
             </div>
@@ -308,42 +300,55 @@ export default function Dashboard() {
       <div className={`${styles.container} ${sidebarOpen ? styles.sidebarOpen : styles.sidebarClosed}`}>
         {/* Solo mostrar el header con estadísticas en overview, manage y sales */}
         {activeTab !== 'create' && activeTab !== 'browse' && activeTab !== 'manage' && activeTab !== 'sales' && (
-          <header className={styles.header}>
+          <div className={styles.header}>
+            <button
+              className={styles.primaryButton}
+              onClick={() => setActiveTab('create')}
+            >
+              <span className={styles.buttonIcon}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="12" y1="5" x2="12" y2="19"/>
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+              </span>
+              Nuevo Sorteo
+            </button>
             <div className={styles.headerCards}>
               <div className={styles.headerCard}>
+                <CircularArrowButton onClick={() => setActiveTab('manage')} />
                 <div className={styles.cardContent}>
-                  <h2>Bienvenido al Dashboard</h2>
-                  <p>Hola, {session?.user?.name || 'Usuario'}</p>
+                  <h2>Sorteos Totales</h2>
+                  <p>{userStats?.totalRaffles ?? 0}</p>
                 </div>
               </div>
               <div className={styles.headerCard}>
                 <div className={styles.cardContent}>
-                  <h3 className={styles.chartTitle}>Estado de las Rifas</h3>
+                  <h3 className={styles.chartTitle}>Estado de los sorteos</h3>
                     <div className={styles.statusContainer}>
                       <div className={styles.statusChart}>
-                        <CircularProgress 
-                          percentage={stats.totalRaffles > 0 ? Math.round((stats.activeRaffles / stats.totalRaffles) * 100) : 0} 
-                          size={100} 
+                        <CircularProgress
+                          percentage={(userStats?.totalRaffles ?? 0) > 0 ? Math.round(((userStats?.activeRaffles ?? 0) / (userStats?.totalRaffles ?? 1)) * 100) : 0}
+                          size={85}
                           color="#F2771A"
                         />
                         <div className={styles.statusLabel}>
-                          {stats.totalRaffles > 0 ? `${Math.round((stats.activeRaffles / stats.totalRaffles) * 100)}%` : '0%'} Activas
+                          {(userStats?.totalRaffles ?? 0) > 0 ? `${Math.round(((userStats?.activeRaffles ?? 0) / (userStats?.totalRaffles ?? 1)) * 100)}%` : '0%'} Activas
                         </div>
                       </div>
                       <div className={styles.statusStats}>
                         <div className={styles.statusItem}>
                           <div className={styles.statusDot} style={{ backgroundColor: '#F2771A' }}></div>
-                          <span>Activas: {stats.activeRaffles}</span>
+                          <span>Activas: {userStats?.activeRaffles ?? 0}</span>
                         </div>
                         <div className={styles.statusItem}>
                           <div className={styles.statusDot} style={{ backgroundColor: '#ef4444' }}></div>
-                          <span>Finalizadas: {stats.expiredRaffles}</span>
+                          <span>Finalizadas: {userStats?.expiredRaffles ?? 0}</span>
                         </div>
                       </div>
                     </div>
                 </div>
               </div>
-              
+
               <div className={styles.headerCard}>
                 <div className={styles.cardContent}>
                   <h3 className={styles.chartTitle}>Cantidad de Tickets Vendidos</h3>
@@ -359,21 +364,21 @@ export default function Dashboard() {
                   ) : (
                     <div className={styles.statusContainer}>
                       <div className={styles.statusChart}>
-                        <CircularProgress 
-                          percentage={stats.totalTicketsSold > 0 ? Math.min(100, Math.round((stats.totalTicketsSold / 100) * 100)) : 0} 
-                          size={100} 
-                          color="#22c55e"
+                        <CircularProgress
+                          percentage={(userStats?.totalTicketsInActiveRaffles ?? 0) > 0 ? Math.min(100, Math.round(((userStats?.totalTicketsSold ?? 0) / (userStats?.totalTicketsInActiveRaffles ?? 1)) * 100)) : 0}
+                          size={85}
+                          color="#F2771A"
                         />
                         <div className={styles.statusLabel}>Vendidos</div>
                       </div>
                       <div className={styles.statusStats}>
                         <div className={styles.statusItem}>
-                          <div className={styles.statusDot} style={{ backgroundColor: '#22c55e' }}></div>
-                          <span>Total: {stats.totalTicketsSold}</span>
+                          <div className={styles.statusDot} style={{ backgroundColor: '#F2771A' }}></div>
+                          <span>Total: {userStats?.totalTicketsSold ?? 0}</span>
                         </div>
                         <div className={styles.statusItem}>
                           <div className={styles.statusDot} style={{ backgroundColor: '#3b82f6' }}></div>
-                          <span>Ingresos: {(stats.totalRevenue)}</span>
+                          <span>Ingresos: {userStats?.totalRevenue ?? 0}</span>
                         </div>
                       </div>
                     </div>
@@ -381,7 +386,7 @@ export default function Dashboard() {
                 </div>
               </div>
             </div>
-          </header>
+          </div>
         )}
 
         <main className={`${styles.content}`}>
@@ -391,33 +396,6 @@ export default function Dashboard() {
               <div className={styles.quickActions}>
                 <h3>Acciones Rápidas</h3>
                 <div className={styles.actionsGrid}>
-                  <button 
-                    className={styles.primaryButton}
-                    onClick={() => setActiveTab('create')}
-                  >
-                    <span className={styles.buttonIcon}>
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <line x1="12" y1="5" x2="12" y2="19"/>
-                        <line x1="5" y1="12" x2="19" y2="12"/>
-                      </svg>
-                    </span>
-                    Crear Nueva Rifa
-                  </button>
-                  <button 
-                    className={styles.secondaryButton}
-                    onClick={() => setActiveTab('manage')}
-                  >
-                    <span className={styles.buttonIcon}>
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                        <polyline points="14,2 14,8 20,8"/>
-                        <line x1="16" y1="13" x2="8" y2="13"/>
-                        <line x1="16" y1="17" x2="8" y2="17"/>
-                        <polyline points="10,9 9,9 8,9"/>
-                      </svg>
-                    </span>
-                    Ver Mis Rifas
-                  </button>
                   <button 
                     className={styles.secondaryButton}
                     onClick={() => setActiveTab('browse')}

@@ -75,26 +75,26 @@ export default function DashboardSidebar({ activeTab, onTabChange, onSidebarTogg
     {
       key: 'create' as const,
       icon: <PlusIcon />,
-      label: 'Crear Rifa',
-      description: 'Crear una nueva rifa'
+      label: 'Crear Sorteo',
+      description: 'Crear un nuevo sorteo'
     },
     {
       key: 'browse' as const,
       icon: <SearchIcon />,
-      label: 'Explorar Rifas',
-      description: 'Descubre rifas disponibles'
+      label: 'Explorar Sorteos',
+      description: 'Descubre sorteos disponibles'
     },
     {
       key: 'manage' as const,
       icon: <ListIcon />,
-      label: 'Mis Rifas',
-      description: 'Administra tus rifas'
+      label: 'Mis Sorteos',
+      description: 'Administra tus sorteos'
     },
     {
       key: 'sales' as const,
       icon: <SalesIcon />,
       label: 'Ventas',
-      description: 'Gestiona las compras de tus rifas'
+      description: 'Gestiona las compras de tus sorteos'
     }
   ]
 

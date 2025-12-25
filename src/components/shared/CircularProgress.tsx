@@ -9,7 +9,7 @@ interface CircularProgressProps {
 
 export const CircularProgress = ({ 
   percentage, 
-  size = 120, 
+  size = 100, 
   strokeWidth = 8, 
   color = '#ff9800' 
 }: CircularProgressProps) => {
